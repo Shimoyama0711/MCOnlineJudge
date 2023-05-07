@@ -34,9 +34,10 @@ serve(async (req) => {
         if (method === "POST") {
             const json = await req.json();
             const email = json.email;
+            const mcid = json.mcid;
             const password = json.password;
 
-            return await signup(email, password);
+            return await signup(email, mcid, password);
         } else return status405;
     }
 
@@ -78,7 +79,7 @@ serve(async (req) => {
     console.log(r);
 });
 
-async function signup(email, password) {
+async function signup(email, mcid, password) {
     const encrypt = await SHA256(password);
 
     const uuid = createUUID();
@@ -86,10 +87,12 @@ async function signup(email, password) {
     let array = {"uuid": uuid};
     let msg = JSON.stringify(array);
 
-    await client.execute(`INSERT INTO mconlinejudge.users (email, password, uuid, created_at) VALUES ('${email}', '${encrypt}', '${uuid}', '${new Date().toLocaleString()}')`).catch(function () {
+    const result = await client.execute(`INSERT INTO mconlinejudge.users (email, mcid, password, uuid, created_at) VALUES ('${email}', '${mcid}', '${encrypt}', '${uuid}', '${new Date().toLocaleString()}')`).catch(function () {
         status = 400;
         msg = "Bad Request";
     });
+
+    console.log(`RESULT => ${result}`);
 
     return new Response(msg, {
         status: status,
