@@ -43,7 +43,7 @@ serve(async (req) => {
 
     console.log(`PATH: ${path}`);
 
-    if (path === "/getdate") {
+    if (path === "/get-date") {
         const date = new Date();
 
         return new Response(date.toLocaleString(), {
@@ -61,6 +61,16 @@ serve(async (req) => {
 
             return await getUserFromUUID(uuid);
         } else return status405;
+    }
+
+    if (path.startsWith("/users/")) {
+        const text = await Deno.readTextFile("./public/users.html")
+        return new Response(text, {
+            status: 200,
+            headers: {
+                "Content-Type": "text/html"
+            }
+        });
     }
 
     // 404 Not Found //
