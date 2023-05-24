@@ -3,7 +3,6 @@ $(function () {
     const uuid = getCookieFromKey("uuid");
 
     const h1 = $("#username");
-    h1.text(username);
 
     $.ajax({
         url: "/get-user-from-uuid",
@@ -20,21 +19,20 @@ $(function () {
         const password = json["password"];
         const createdAt = json["created_at"];
 
-        const usernameOutput = $("#username-output");
         const mcidOutput = $("#mcid-output");
         const emailOutput = $("#email-output");
         const passwordOutput = $("#password-output");
         const uuidOutput = $("#uuid-output");
         const createdAtOutput = $("#created-at-output");
 
-        console.log(username);
-        console.log(mcid);
-        console.log(email);
-        console.log(password);
-        console.log(uuid);
-        console.log(createdAt);
+        // DEBUG //
+        //console.log(mcid);
+        //console.log(email);
+        //console.log(password);
+        //console.log(uuid);
+        //console.log(createdAt);
 
-        usernameOutput.text(username);
+        h1.text(json["mcid"]);
         mcidOutput.text(mcid);
         emailOutput.text(email);
         passwordOutput.text(password);
