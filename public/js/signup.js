@@ -37,31 +37,68 @@ $(function () {
         }
     });
 
-    signupButton.on("click", function () {
+    signupButton.on("click", async function () {
         const email = emailInput.val();
         const mcid = mcidInput.val();
         const password = passwordInput.val();
-        const json = {email: email, mcid: mcid, password: password};
+        const encrypted = await sha256(password);
 
+        const alert = $("#emailAlert");
+
+        // UUID取得 //
         $.ajax({
-            url: "/signup",
-            type: "POST",
+            url: `https://api.mojang.com/users/profiles/minecraft/${mcid}`,
+            type: "GET",
             dataType: "text",
-            data: JSON.stringify(json)
+            crossDomain: true,
+            headers: {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Origin': '*'
+            }
         }).done(function (data) {
-            const json = JSON.parse(data);
+            const uuid = data["id"];
+            const json = {email: email, mcid: mcid, encrypted: encrypted, uuid: uuid};
 
-            document.cookie = `uuid=${json["uuid"]}`;
-            window.location.href = "./index.html";
-        }).fail(function (a, b, c) {
-            console.log("[Ajax Failed]");
-            console.log(a);
-            console.log(b);
-            console.log(c);
-            $("#emailAlert").css("display", "");
+            $.ajax({
+                url: "/signup",
+                type: "POST",
+                dataType: "text",
+                data: JSON.stringify(json)
+            }).done(function (data) {
+                const json = JSON.parse(data);
+
+                document.cookie = `uuid=${json["uuid"]}`;
+                window.location.href = "./index.html";
+            }).fail(function (a, b, c) {
+                console.log("[Ajax Failed]");
+                console.log(a);
+                console.log(b);
+                console.log(c);
+
+                alert.css("display", "");
+                alert.html(`
+                <i class="bi-exclamation-circle-fill"></i>
+                このEメールアドレスは既に登録されています
+            `);
+            });
+        }).fail(function () {
+            alert.css("display", "");
+            alert.html(`
+                <i class="bi-exclamation-circle-fill"></i>
+                このMCIDは存在しません
+            `);
         });
     });
 });
+
+async function sha256(data) {
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 function buttonCheck(email, mcid, password, password2) {
     const regex = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$");

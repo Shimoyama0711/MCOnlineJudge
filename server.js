@@ -29,21 +29,31 @@ serve(async (req) => {
 
     // "/signup" //
     if (path === "/signup") {
-        // const buf = await Deno.readAll(req.body);
-
         if (method === "POST") {
             const json = await req.json();
             const email = json.email;
             const mcid = json.mcid;
-            const password = json.password;
+            const encrypted = json.encrypted;
+            const uuid = json.uuid;
 
-            return await signup(email, mcid, password);
+            return await signup(email, mcid, encrypted, uuid);
+        } else return status405;
+    }
+
+    // "/login" //
+    if (path === "/login") {
+        if (method === "POST") {
+            const json = await req.json();
+            const email = json.email;
+            const encrypted = json.encrypted;
+
+            return await login(email, encrypted);
         } else return status405;
     }
 
     console.log(`PATH: ${path}`);
 
-    if (path === "/getdate") {
+    if (path === "/get-date") {
         const date = new Date();
 
         return new Response(date.toLocaleString(), {
@@ -54,6 +64,15 @@ serve(async (req) => {
         });
     }
 
+    if (path === "/get-user-from-email") {
+        if (method === "POST") {
+            const json = await req.json();
+            const email = json.email;
+
+            return await getUserFromEmail(email);
+        } else return status405;
+    }
+
     if (path === "/get-user-from-uuid") {
         if (method === "POST") {
             const json = await req.json();
@@ -61,6 +80,16 @@ serve(async (req) => {
 
             return await getUserFromUUID(uuid);
         } else return status405;
+    }
+
+    if (path.startsWith("/users/")) {
+        const text = await Deno.readTextFile("./public/users.html")
+        return new Response(text, {
+            status: 200,
+            headers: {
+                "Content-Type": "text/html"
+            }
+        });
     }
 
     // 404 Not Found //
@@ -79,20 +108,75 @@ serve(async (req) => {
     console.log(r);
 });
 
-async function signup(email, mcid, password) {
-    const encrypt = await SHA256(password);
-
-    const uuid = createUUID();
+/**
+ * @param email Eメールアドレス
+ * @param mcid MinecraftのID
+ * @param encrypted SHA-256でハッシュ化したパスワード
+ * @param uuid MCIDに紐付けられたUUID
+ * @returns {Promise<Response>}
+ */
+async function signup(email, mcid, encrypted, uuid) {
     let status = 200;
     let array = {"uuid": uuid};
     let msg = JSON.stringify(array);
 
-    const result = await client.execute(`INSERT INTO mconlinejudge.users (email, mcid, password, uuid, created_at) VALUES ('${email}', '${mcid}', '${encrypt}', '${uuid}', '${new Date().toLocaleString()}')`).catch(function () {
+    const result = await client.execute(`INSERT INTO mconlinejudge.users (email, mcid, password, uuid, created_at) VALUES ('${email}', '${mcid}', '${encrypted}', '${uuid}', '${new Date().toLocaleString()}')`).catch(function () {
         status = 400;
         msg = "Bad Request";
     });
 
     console.log(`RESULT => ${result}`);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "text/plain"
+        }
+    });
+}
+
+async function login(email, encrypted) {
+    let status = 200;
+    let msg = "OK";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.users WHERE email='${email}'`).catch(function () {
+        status = 400;
+        msg = "このEメールアドレスは登録されていません";
+    });
+
+    const result = objects[0];
+
+    if (result === undefined) {
+        status = 400;
+        msg = "このEメールアドレスは登録されていません";
+    } else {
+        const check = result["password"];
+
+        if (encrypted !== check) {
+            status = 400;
+            msg = "パスワードが違います"
+        }
+    }
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "text/plain"
+        }
+    });
+}
+
+async function getUserFromEmail(email) {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.users WHERE email='${email}'`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    const result = objects[0];
+    msg = JSON.stringify(result);
 
     return new Response(msg, {
         status: status,
@@ -120,12 +204,6 @@ async function getUserFromUUID(uuid) {
             "Content-Type": "text/plain"
         }
     });
-}
-
-async function SHA256(text) {
-    const uint8 = new TextEncoder().encode(text);
-    const digest = await crypto.subtle.digest("SHA-256", uint8);
-    return Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
 function createUUID(){
