@@ -9,6 +9,13 @@ const client = await new Client().connect({
     password: "BTcfrLkK1FFU"
 });
 
+const status404 = new Response("404 Not Found", {
+    status: 404,
+    headers: {
+        "Content-Type": "text/plain"
+    }
+});
+
 const status405 = new Response("405 Method Not Allowed", {
     status: 405,
     headers: {
@@ -62,6 +69,21 @@ serve(async (req) => {
                 "Content-Type": "text/plain"
             }
         });
+    }
+
+    if (path.startsWith("/get-uuid/")) {
+        if (method === "GET") {
+            const username = path.split("/")[2];
+            const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;
+            const response = await fetch(url);
+
+            return ((response.ok) ? new Response(await response.text(), {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }) : status404);
+        } else return status405;
     }
 
     if (path === "/get-user-from-email") {
@@ -203,12 +225,5 @@ async function getUserFromUUID(uuid) {
         headers: {
             "Content-Type": "text/plain"
         }
-    });
-}
-
-function createUUID(){
-    return '########-####-4###-y###-############'.replace(/[#y]/g, function(a) {
-        let r = (new Date().getTime() + Math.random() * 16) % 16 | 0, v = a === '#' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
     });
 }

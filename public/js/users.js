@@ -1,5 +1,4 @@
 $(function () {
-    const username = location.pathname.replace("/users/", "");
     const uuid = getCookieFromKey("uuid");
 
     const h1 = $("#username");
@@ -32,7 +31,11 @@ $(function () {
         //console.log(uuid);
         //console.log(createdAt);
 
-        h1.text(json["mcid"]);
+        h1.html(`
+            <img alt="Your Skin" src="https://crafatar.com/avatars/${uuid}?overlay=true" width="36px" height="36px">
+            ${json["mcid"]}
+        `);
+
         mcidOutput.text(mcid);
         emailOutput.text(email);
         passwordOutput.text(password);

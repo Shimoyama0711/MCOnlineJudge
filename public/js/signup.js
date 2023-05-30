@@ -47,16 +47,14 @@ $(function () {
 
         // UUID取得 //
         $.ajax({
-            url: `https://api.mojang.com/users/profiles/minecraft/${mcid}`,
+            url: `/get-uuid/${mcid}`,
             type: "GET",
-            dataType: "text",
-            crossDomain: true,
-            headers: {
-                'Content-Type': 'text/plain',
-                'Access-Control-Allow-Origin': '*'
-            }
+            dataType: "text"
         }).done(function (data) {
-            const uuid = data["id"];
+            // console.log(data);
+
+            const tmp = JSON.parse(data);
+            const uuid = tmp["id"];
             const json = {email: email, mcid: mcid, encrypted: encrypted, uuid: uuid};
 
             $.ajax({
@@ -69,11 +67,11 @@ $(function () {
 
                 document.cookie = `uuid=${json["uuid"]}`;
                 window.location.href = "./index.html";
-            }).fail(function (a, b, c) {
-                console.log("[Ajax Failed]");
-                console.log(a);
-                console.log(b);
-                console.log(c);
+            }).fail(function () {
+                // console.log("[Ajax Failed]");
+                // console.log(a);
+                // console.log(b);
+                // console.log(c);
 
                 alert.css("display", "");
                 alert.html(`
