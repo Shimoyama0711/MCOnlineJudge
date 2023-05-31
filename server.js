@@ -1,6 +1,6 @@
-import {serve} from "https://deno.land/std@0.184.0/http/server.ts"
 import {serveDir} from "https://deno.land/std@0.184.0/http/file_server.ts"
 import {Client} from "https://deno.land/x/mysql@v2.11.0/mod.ts"
+import { serveTls } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const client = await new Client().connect({
     hostname: "127.0.0.1",
@@ -23,7 +23,10 @@ const status405 = new Response("405 Method Not Allowed", {
     }
 });
 
-serve(async (req) => {
+const certFile = "./ca.crt";
+const keyFile = "./ca.key";
+
+serveTls(async (req) => {
     const dir = await serveDir(req, {
         fsRoot: "public"
     });
@@ -105,7 +108,7 @@ serve(async (req) => {
     }
 
     if (path.startsWith("/users/")) {
-        const text = await Deno.readTextFile("./public/users.html")
+        const text = await Deno.readTextFile("./public/users.html");
         return new Response(text, {
             status: 200,
             headers: {
@@ -126,6 +129,9 @@ serve(async (req) => {
     }
 
     return dir;
+}, {
+    certFile: certFile,
+    keyFile: keyFile
 }).then(r => {
     console.log(r);
 });

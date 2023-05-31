@@ -31,7 +31,7 @@ $(function () {
         }).done(function () {
             console.log("[Ajax Success]");
 
-            alert.removeClass("alert-warning");
+            alert.removeClass("alert-danger");
             alert.addClass("alert-success");
             alert.css("display", "");
             alert.html(`

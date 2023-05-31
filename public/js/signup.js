@@ -67,11 +67,11 @@ $(function () {
 
                 document.cookie = `uuid=${json["uuid"]}`;
                 window.location.href = "./index.html";
-            }).fail(function () {
-                // console.log("[Ajax Failed]");
-                // console.log(a);
-                // console.log(b);
-                // console.log(c);
+            }).fail(function (a, b, c) {
+                console.log("[Ajax Failed]");
+                console.log(a);
+                console.log(b);
+                console.log(c);
 
                 alert.css("display", "");
                 alert.html(`
@@ -79,7 +79,12 @@ $(function () {
                 このEメールアドレスは既に登録されています
             `);
             });
-        }).fail(function () {
+        }).fail(function (a, b, c) {
+            console.log("[Ajax Failed]");
+            console.log(a);
+            console.log(b);
+            console.log(c);
+
             alert.css("display", "");
             alert.html(`
                 <i class="bi-exclamation-circle-fill"></i>
