@@ -1,0 +1,8 @@
+{
+  "name": "MCOnlineJudge",
+  "version": "1.0.0",
+  "dependencies": {
+    "marked": "^5.0.4",
+    "node": "^20.2.0"
+  }
+}

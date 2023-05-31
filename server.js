@@ -117,6 +117,16 @@ serveTls(async (req) => {
         });
     }
 
+    if (path.startsWith("/problem/") && !path.endsWith(".md")) {
+        const text = await Deno.readTextFile("./public/PROBLEM_TEMPLATE.html");
+        return new Response(text, {
+            status: 200,
+            headers: {
+                "Content-Type": "text/html"
+            }
+        });
+    }
+
     // 404 Not Found //
     if (dir.status === 404) {
         const text = await Deno.readTextFile("./public/404.html")
