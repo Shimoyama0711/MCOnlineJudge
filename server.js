@@ -117,7 +117,7 @@ serveTls(async (req) => {
         });
     }
 
-    if (path.startsWith("/problem/") && !path.endsWith(".md")) {
+    if (path.startsWith("/problem/") && !path.includes(".")) {
         const text = await Deno.readTextFile("./public/PROBLEM_TEMPLATE.html");
         return new Response(text, {
             status: 200,
