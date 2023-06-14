@@ -1,0 +1,9 @@
+.bq {
+    font-size: 0.8rem;
+    line-height: 1.25rem;
+}
+
+.CodeMirror {
+    font-family: Consolas, Menlo, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif, serif;
+    font-size: 14px;
+}
