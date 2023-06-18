@@ -10,14 +10,11 @@ $(function () {
         tabSize: 4
     });
 
-    // MathJax レンダリング //
-    MathJax.typesetPromise();
-
     // Cookie の "uuid" が空でなければ提出部分を表示 //
     const uuid = getCookieFromKey("uuid");
     const submitDiv = $("#submit-div");
 
-    if (uuid !== null) {
+    if (uuid.length > 0) {
         const versions = ["Java 8", "Java 20"];
         const selectVersion = $("#select-version");
 
@@ -35,22 +32,32 @@ $(function () {
     const submitButton = $("#submit-button");
 
     submitButton.on("click", function () {
-        const source = editor.getValue();
-        console.log(source);
+        const array = {
+            uuid: getCookieFromKey("uuid"),
+            problem: location.pathname.replace("/problem", "").replace(".html", ""),
+            date: new Date(),
+            source: editor.getValue()
+        };
+
+        // console.log(JSON.stringify(array));
 
         $.ajax({
-            url: "/judge",
+            url: "/send-judge",
             type: "POST",
             dataType: "text",
-            data: source
+            data: JSON.stringify(array)
         }).done(function() {
-            location.href = "/submit-list";
+            console.log("Ajax Successfully!");
+            // location.href = "/submit-list";
         }).fail(function(a, b, c) {
             console.log(a);
             console.log(b);
             console.log(c);
         });
     });
+
+    // MathJax レンダリング //
+    MathJax.typesetPromise();
 });
 
 function getCookieFromKey(key) {
