@@ -61,6 +61,20 @@ serveTls(async (req) => {
         } else return status405;
     }
 
+    // "/send-judge" //
+    if (path === "/send-judge") {
+        if (method === "POST") {
+            const json = await req.json();
+            const uuid = json.uuid;
+            const problem = json.problem;
+            const date = json.date;
+            const source = json.source;
+
+            return await sendJudge(uuid, problem, date, source);
+        } else return status405;
+    }
+
+
     console.log(`PATH: ${path}`);
 
     if (path === "/get-date") {
@@ -182,12 +196,11 @@ async function login(email, encrypted) {
         msg = "このEメールアドレスは登録されていません";
     });
 
-    const result = objects[0];
-
-    if (result === undefined) {
+    if (objects === undefined || objects[0] === undefined) {
         status = 400;
         msg = "このEメールアドレスは登録されていません";
     } else {
+        const result = objects[0];
         const check = result["password"];
 
         if (encrypted !== check) {
@@ -200,6 +213,46 @@ async function login(email, encrypted) {
         status: status,
         headers: {
             "Content-Type": "text/plain"
+        }
+    });
+}
+
+async function sendJudge(uuid, problem, date, source) {
+    let status = 200;
+    let msg = "OK";
+
+    const url = "http://localhost:8080/judge";
+
+    const data = {
+        uuid: uuid,
+        problem: problem,
+        date: date,
+        source: source
+    };
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    };
+
+    fetch(url, options)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response: ", data);
+        })
+        .catch(error => {
+            console.error("Error: ", error)
+            status = 400;
+            msg = "ジャッジ中にエラーが発生しました";
+        });
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "plain/text"
         }
     });
 }
