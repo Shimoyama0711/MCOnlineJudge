@@ -57,6 +57,8 @@ class MyHandler implements HttpHandler {
             default -> "{\"message\": \"200 OK\"}";
         };
 
+        // Response //
+
         Headers resHeaders = t.getResponseHeaders();
         resHeaders.set("Content-Type", "application/json");
         resHeaders.set("Last-Modified", ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME));
