@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.Headers;
@@ -72,7 +71,7 @@ class MyHandler implements HttpHandler {
                     Date date = sdf.parse(node.get("date").asText());
                     String body = node.get("body").asText();
 
-                    insertSourceDatabase(uuid, problem, date, body);
+                    insertSourceDatabase(uuid, problem, date.toString(), body);
                     judge(problem, body);
                 } catch (ParseException e) {
                     System.out.println(e.getMessage());
@@ -112,10 +111,8 @@ class MyHandler implements HttpHandler {
         os.close();
     }
 
-    public static void insertSourceDatabase(String uuid, String problem, Date date, String body) {
+    public static void insertSourceDatabase(String uuid, String problem, String date, String body) {
         try {
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
@@ -126,7 +123,7 @@ class MyHandler implements HttpHandler {
             PreparedStatement ps = conn.prepareStatement(SQL);
             ps.setString(1, uuid);
             ps.setString(2, problem);
-            ps.setDate(3, sqlDate);
+            ps.setString(3, date);
             ps.setString(4, body);
 
             // System.out.println(ps);
