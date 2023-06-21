@@ -68,9 +68,9 @@ serveTls(async (req) => {
             const uuid = json.uuid;
             const problem = json.problem;
             const date = json.date;
-            const source = json.source;
+            const body = json.body;
 
-            return await sendJudge(uuid, problem, date, source);
+            return await sendJudge(uuid, problem, date, body);
         } else return status405;
     }
 
@@ -217,7 +217,7 @@ async function login(email, encrypted) {
     });
 }
 
-async function sendJudge(uuid, problem, date, source) {
+async function sendJudge(uuid, problem, date, body) {
     let status = 200;
     let msg = "OK";
 
@@ -227,7 +227,7 @@ async function sendJudge(uuid, problem, date, source) {
         uuid: uuid,
         problem: problem,
         date: date,
-        source: source
+        body: body
     };
 
     const options = {

@@ -36,7 +36,7 @@ $(function () {
             uuid: getCookieFromKey("uuid"),
             problem: location.pathname.replace("/problem", "").replace(".html", ""),
             date: new Date(),
-            source: editor.getValue()
+            body: editor.getValue()
         };
 
         // console.log(JSON.stringify(array));
