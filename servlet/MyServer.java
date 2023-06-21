@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.UUID;
 
 public class MyServer {
     public static void main(String[] args) throws IOException {
@@ -57,7 +59,25 @@ class MyHandler implements HttpHandler {
             System.out.println();
             System.out.println(json);
 
-            insertSourceDatabase(json);
+            if (t.getRequestURI().toString().equals("/judge")) {
+                ObjectMapper mapper = new ObjectMapper();
+
+                try {
+                    JsonNode node = mapper.readValue(json, JsonNode.class);
+                    String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+                    SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+
+                    String uuid = node.get("uuid").asText();
+                    String problem = node.get("problem").asText();
+                    Date date = sdf.parse(node.get("date").asText());
+                    String body = node.get("body").asText();
+
+                    insertSourceDatabase(uuid, problem, date, body);
+                    judge(problem, body);
+                } catch (ParseException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
         }
 
         String resBody = switch (t.getRequestURI().toString()) {
@@ -92,18 +112,9 @@ class MyHandler implements HttpHandler {
         os.close();
     }
 
-    public static void insertSourceDatabase(String json) {
-        ObjectMapper mapper = new ObjectMapper();
+    public static void insertSourceDatabase(String uuid, String problem, Date date, String body) {
         try {
-            JsonNode node = mapper.readValue(json, JsonNode.class);
-            String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-
-            String uuid = node.get("uuid").asText();
-            String problem = node.get("problem").asText();
-            Date date = sdf.parse(node.get("date").asText());
             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            String body = node.get("body").asText();
 
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
@@ -122,8 +133,17 @@ class MyHandler implements HttpHandler {
 
             ps.executeUpdate();
             conn.close();
-        } catch (JsonProcessingException | ParseException | SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static void judge(String problem, String body) {
+        UUID uuid = UUID.randomUUID();
+        File judgeFile = new File("./" + uuid + ".java");
+
+        /*
+            つづき
+         */
     }
 }
