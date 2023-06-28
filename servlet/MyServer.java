@@ -5,10 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -71,7 +68,10 @@ class MyHandler implements HttpHandler {
                     Date date = sdf.parse(node.get("date").asText());
                     String body = node.get("body").asText();
 
+                    // ソース一覧のデータベースに追加 //
                     insertSourceDatabase(uuid, problem, date.toString(), body);
+
+                    // ジャッジする //
                     judge(problem, body);
                 } catch (ParseException e) {
                     System.out.println(e.getMessage());
@@ -116,7 +116,7 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "INSERT INTO sources (uuid, problem, date, body) VALUES (?, ?, ?, ?)";
+            String SQL = "INSERT INTO sources (uuid, problem, date, body, status) VALUES (?, ?, ?, ?, ?)";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);
@@ -125,6 +125,7 @@ class MyHandler implements HttpHandler {
             ps.setString(2, problem);
             ps.setString(3, date);
             ps.setString(4, body);
+            ps.setString(5, "Judge...");
 
             // System.out.println(ps);
 
@@ -135,9 +136,12 @@ class MyHandler implements HttpHandler {
         }
     }
 
-    public static void judge(String problem, String body) {
+    public static void judge(String problem, String body) throws IOException {
         UUID uuid = UUID.randomUUID();
         File judgeFile = new File("./" + uuid + ".java");
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
+        bw.write(body);
 
         /*
             つづき
