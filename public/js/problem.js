@@ -2,6 +2,10 @@ $(function () {
     const h1 = $("h1:first");
     $("title").text(h1.text());
 
+    const problem = location.pathname.replace("/problem/", "").replace(".html", "");
+
+    replaceDetail(problem);
+
     // CodeMirror 設定部分 //
     const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
         mode: "text/x-java",
@@ -34,7 +38,7 @@ $(function () {
     submitButton.on("click", function () {
         const array = {
             uuid: getCookieFromKey("uuid"),
-            problem: location.pathname.replace("/problem", "").replace(".html", ""),
+            problem: location.pathname.replace("/problem/", "").replace(".html", ""),
             date: new Date(),
             body: editor.getValue()
         };
@@ -76,4 +80,37 @@ function getCookieFromKey(key) {
     }
 
     return result;
+}
+
+function replaceDetail(problem) {
+    const json = {
+        problem: problem
+    };
+
+    const title = $("#problem-title");
+    const time = $("#problem-time");
+    const memory = $("#problem-memory");
+    const difficulty = $("#problem-difficulty");
+    const score = $("#problem-score");
+
+    $.ajax({
+        url: "/get-problem-detail",
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify(json)
+    }).done(function (data) {
+        const json = JSON.parse(JSON.stringify(data));
+
+        title.text(json["title"]);
+        time.text(json["time"]);
+        memory.text(json["memory"]);
+        difficulty.text(json["difficulty"]);
+        score.text(`配点：$${json["score"]}$ 点`);
+
+        MathJax.typesetPromise();
+    }).catch(function(a, b, c) {
+        console.log(a);
+        console.log(b);
+        console.log(c);
+    });
 }

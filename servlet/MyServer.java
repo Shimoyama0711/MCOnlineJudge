@@ -92,7 +92,7 @@ class MyHandler implements HttpHandler {
                     }
 
                     // 一時ファイルを削除 //
-                    deleteFile(judgeId);
+                    deleteFile(judgeId, flagCompile);
                 } catch (ParseException e) {
                     System.out.println(e.getMessage());
                 }
@@ -180,15 +180,16 @@ class MyHandler implements HttpHandler {
     /**
      * @param uuid ハイフンなしのUUID形式
      */
-    public static void deleteFile(String uuid) {
+    public static void deleteFile(String uuid, boolean compileSuccess) {
         File javaFile = new File("./servlet/" + uuid + ".java");
         File classFile = new File("./servlet/" + uuid + ".class");
 
         if (!javaFile.delete())
             System.out.println(javaFile.getName() + " の削除に失敗しました");
 
-        if (!classFile.delete())
-            System.out.println(classFile.getName() + " の削除に失敗しました");
+        if (compileSuccess)
+            if (!classFile.delete())
+                System.out.println(classFile.getName() + " の削除に失敗しました");
     }
 
     /**

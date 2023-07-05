@@ -121,6 +121,21 @@ serveTls(async (req) => {
         } else return status405;
     }
 
+    if (path === "/get-problems") {
+        if (method === "GET") {
+            return await getProblems();
+        } else return status405;
+    }
+
+    if (path === "/get-problem-detail") {
+        if (method === "POST") {
+            const json = await req.json();
+            const problem = json.problem;
+
+            return await getProblemDetail(problem);
+        } else return status405;
+    }
+
     if (path.startsWith("/users/")) {
         const text = await Deno.readTextFile("./public/users.html");
         return new Response(text, {
@@ -252,7 +267,7 @@ async function sendJudge(uuid, problem, date, body) {
     return new Response(msg, {
         status: status,
         headers: {
-            "Content-Type": "plain/text"
+            "Content-Type": "application/json"
         }
     });
 }
@@ -272,7 +287,7 @@ async function getUserFromEmail(email) {
     return new Response(msg, {
         status: status,
         headers: {
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
         }
     });
 }
@@ -292,7 +307,46 @@ async function getUserFromUUID(uuid) {
     return new Response(msg, {
         status: status,
         headers: {
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function getProblems() {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.problems`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    msg = JSON.stringify(objects);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function getProblemDetail(problem) {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.problems WHERE id='${problem}'`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    const result = objects[0];
+    msg = JSON.stringify(result);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
         }
     });
 }
