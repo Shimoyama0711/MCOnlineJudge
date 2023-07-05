@@ -169,7 +169,7 @@ class MyHandler implements HttpHandler {
      */
     public static void saveFile(String uuid, String body) throws IOException {
         File judgeFile = new File("./servlet/" + uuid + ".java");
-        body = body.replace("public class Main", "public class " + uuid);
+        body = body.replace("class Main", "class " + uuid);
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
         bw.write(body);
