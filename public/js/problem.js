@@ -1,7 +1,4 @@
 $(function () {
-    const h1 = $("h1:first");
-    $("title").text(h1.text());
-
     const problem = location.pathname.replace("/problem/", "").replace(".html", "");
 
     replaceDetail(problem);
@@ -106,6 +103,9 @@ function replaceDetail(problem) {
         memory.text(json["memory"]);
         difficulty.text(json["difficulty"]);
         score.text(`配点：$${json["score"]}$ 点`);
+
+        const h1 = $("h1:first");
+        $("title").text(h1.text());
 
         MathJax.typesetPromise();
     }).catch(function(a, b, c) {
