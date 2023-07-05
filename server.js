@@ -136,6 +136,15 @@ serveTls(async (req) => {
         } else return status405;
     }
 
+    if (path === "/get-sources-from-uuid") {
+        if (method === "POST") {
+            const json = await req.json();
+            const uuid = json.uuid;
+
+            return await getSourcesFromUUID(uuid);
+        } else return status405;
+    }
+
     if (path.startsWith("/users/")) {
         const text = await Deno.readTextFile("./public/users.html");
         return new Response(text, {
@@ -342,6 +351,25 @@ async function getProblemDetail(problem) {
 
     const result = objects[0];
     msg = JSON.stringify(result);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function getSourcesFromUUID(uuid) {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.sources WHERE uuid='${uuid}'`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    msg = JSON.stringify(objects);
 
     return new Response(msg, {
         status: status,
