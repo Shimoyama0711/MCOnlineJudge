@@ -36,15 +36,27 @@ function addRows() {
 
         for (let obj of json) {
             const className = obj["problem"].replace("/", "-");
+            const status = obj["status"];
+            let badgeClass = "bg-warning";
+
+            if (status === "AC")
+                badgeClass = "bg-success";
+
+            if (status === "Judge...")
+                badgeClass = "bg-secondary";
 
             tr.after(`
-                <tr>
+                <tr class="align-middle">
                     <td class="${className}">
                         <a href="/problem/${obj["problem"]}.html">${obj["title"]}</a>
                     </td>
                     <td class="${className}"><code>${obj["date"]}</code></td>
                     <td style="text-align: center" class="${className}"><code>${obj["body"].length}</code></td>
-                    <td style="text-align: center" class="${className}"><code>${obj["status"]}</code></td>
+                    <td style="text-align: center" class="${className}">
+                        <span class="badge bg-success">
+                            ${obj["status"]}
+                        </span>
+                    </td>
                     <td style="text-align: center" class="${className}"><code>${obj["score"]}</code></td>
                 </tr>
             `);
@@ -65,7 +77,5 @@ function addRows() {
         type: "GET"
     }).done(function (data) {
         const json = JSON.parse(JSON.stringify(data));
-
-
     });
 }
