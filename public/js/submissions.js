@@ -53,7 +53,7 @@ function addRows() {
                     <td class="${className}"><code>${obj["date"]}</code></td>
                     <td style="text-align: center" class="${className}"><code>${obj["body"].length}</code></td>
                     <td style="text-align: center" class="${className}">
-                        <span class="badge bg-success">
+                        <span class="badge ${badgeClass}">
                             ${obj["status"]}
                         </span>
                     </td>

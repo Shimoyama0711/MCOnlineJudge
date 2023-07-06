@@ -49,7 +49,7 @@ $(function () {
             data: JSON.stringify(array)
         }).done(function() {
             console.log("Ajax Successfully!");
-            // location.href = "/submit-list";
+            location.href = "/submissions.html";
         }).fail(function(a, b, c) {
             console.log(a);
             console.log(b);
