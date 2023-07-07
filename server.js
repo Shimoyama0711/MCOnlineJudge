@@ -136,6 +136,12 @@ serveTls(async (req) => {
         } else return status405;
     }
 
+    if (path === "/get-all-problems-details") {
+        if (method === "GET") {
+            return await getAllProblemsDetails();
+        } else return status405;
+    }
+
     if (path === "/get-sources-from-uuid") {
         if (method === "POST") {
             const json = await req.json();
@@ -351,6 +357,25 @@ async function getProblemDetail(problem) {
 
     const result = objects[0];
     msg = JSON.stringify(result);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function getAllProblemsDetails() {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.problems`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    msg = JSON.stringify(objects);
 
     return new Response(msg, {
         status: status,
