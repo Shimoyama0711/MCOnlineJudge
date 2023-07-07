@@ -15,7 +15,7 @@ $(function () {
     const uuid = getCookieFromKey("uuid");
     const submitDiv = $("#submit-div");
 
-    if (uuid.length > 0) {
+    if (uuid !== undefined) {
         const versions = ["Java 8", "Java 20"];
         const selectVersion = $("#select-version");
 
@@ -49,7 +49,16 @@ $(function () {
             data: JSON.stringify(array)
         }).done(function() {
             console.log("Ajax Successfully!");
-            location.href = "/submissions.html";
+            submitButton.addClass("disabled");
+            submitButton.removeClass("btn-success");
+            submitButton.addClass("btn-info");
+            submitButton.html(`
+                <i class="bi-hourglass-split"></i>
+                送信中
+            `);
+            setTimeout(function() {
+                location.href = "/submissions.html";
+            }, 1000);
         }).fail(function(a, b, c) {
             console.log(a);
             console.log(b);

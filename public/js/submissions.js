@@ -26,29 +26,47 @@ function addRows() {
         uuid: uuid
     };
 
-    $.ajax({
-        url: "/get-sources-from-uuid",
-        type: "POST",
-        dataType: "",
-        data: JSON.stringify(array)
-    }).done(function(data) {
-        const json = JSON.parse(JSON.stringify(data));
+    // 最初にすべての問題の詳細を取得 //
+    getAllProblemsDetails().done(function (data) {
+        const allDetails = JSON.parse(JSON.stringify(data));
 
-        for (let obj of json) {
-            const className = obj["problem"].replace("/", "-");
-            const status = obj["status"];
-            let badgeClass = "bg-warning";
+        // ユーザーのUUIDから送信したソースを取得 //
+        $.ajax({
+            url: "/get-sources-from-uuid",
+            type: "POST",
+            data: JSON.stringify(array),
+        }).done(function(data) {
+            const json = JSON.parse(JSON.stringify(data));
 
-            if (status === "AC")
-                badgeClass = "bg-success";
+            for (let obj of json) {
+                const tr = $("#table tr:last");
 
-            if (status === "Judge...")
-                badgeClass = "bg-secondary";
+                const className = obj["problem"].replace("/", "-");
+                const status = obj["status"];
 
-            tr.after(`
+                let title = "";
+                let score = "";
+
+                for (let o of allDetails) {
+                    if (o["id"] === obj["problem"]) {
+                        title = o["title"];
+                        score = o["score"];
+                        break;
+                    }
+                }
+
+                let badgeClass = "bg-warning";
+
+                if (status === "AC")
+                    badgeClass = "bg-success";
+
+                if (status === "Judge...")
+                    badgeClass = "bg-secondary";
+
+                tr.after(`
                 <tr class="align-middle">
                     <td class="${className}">
-                        <a href="/problem/${obj["problem"]}.html">${obj["title"]}</a>
+                        <a href="/problem/${obj["problem"]}.html">${title}</a>
                     </td>
                     <td class="${className}"><code>${obj["date"]}</code></td>
                     <td style="text-align: center" class="${className}"><code>${obj["body"].length}</code></td>
@@ -57,25 +75,27 @@ function addRows() {
                             ${obj["status"]}
                         </span>
                     </td>
-                    <td style="text-align: center" class="${className}"><code>${obj["score"]}</code></td>
+                    <td style="text-align: center" class="${className}"><code>${score}</code></td>
                 </tr>
             `);
-        }
+            }
 
-        console.log(data);
-
-    }).fail(function(a, b, c) {
+            console.log(data);
+        }).fail(function(a, b, c) {
+            console.log(a);
+            console.log(b);
+            console.log(c);
+        });
+    }).fail(function (a, b, c) {
         console.log(a);
         console.log(b);
         console.log(c);
     });
+}
 
-    const tr = $("#table tr:last");
-
-    $.ajax({
-        url: "/get-problems",
-        type: "GET"
-    }).done(function (data) {
-        const json = JSON.parse(JSON.stringify(data));
+function getAllProblemsDetails() {
+    return $.ajax({
+        url: "/get-all-problems-details",
+        type: "GET",
     });
 }
