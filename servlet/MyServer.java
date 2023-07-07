@@ -64,6 +64,7 @@ class MyHandler implements HttpHandler {
                     JsonNode node = mapper.readValue(json, JsonNode.class);
                     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
                     SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
                     String uuid = node.get("uuid").asText();
                     String judgeId = randomUUID();
@@ -72,7 +73,7 @@ class MyHandler implements HttpHandler {
                     String body = node.get("body").asText();
 
                     // ソース一覧のデータベースに追加 //
-                    insertSourceDatabase(uuid, problem, judgeId, date.toString(), body, "Judge...");
+                    insertSourceDatabase(uuid, problem, judgeId, sdf2.format(date), body, "Judge...");
 
                     // ファイルを保存 //
                     saveFile(judgeId, body);
