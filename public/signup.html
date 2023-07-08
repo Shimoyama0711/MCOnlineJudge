@@ -27,50 +27,56 @@
 
 <nav id="navbar"></nav>
 
-<div class="p-3 rounded shadow" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <h2 class="mb-3">
-        <img src="/favicon.ico" alt="MCOnlineJudge Logo">
-        MCOnlineJudge Sign up
-    </h2>
-    <div class="mb-3 p-3 border rounded-1" style="text-align: left">
-        <div class="mb-3">
-            <label for="emailInput">
-                <i class="bi-envelope-at"></i>
-                <b>E-mail Address</b>
-            </label>
-            <input class="form-control" type="email" id="emailInput">
+<div class="p-3 container" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-12">
+            <div class="p-3 modal-content rounded-1 shadow">
+                <h2 class="mb-3">
+                    <img src="/favicon.ico" alt="MCOnlineJudge Logo">
+                    MCOnlineJudge Sign up
+                </h2>
+                <div class="mb-3 p-3 border rounded-1" style="text-align: left">
+                    <div class="mb-3">
+                        <label for="emailInput">
+                            <i class="bi-envelope-at"></i>
+                            <b>E-mail Address</b>
+                        </label>
+                        <input class="form-control" type="email" id="emailInput">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="mcidInput">
+                            <i class="bi-tag"></i>
+                            <b>Your MCID</b>
+                        </label>
+                        <input class="form-control" type="text" id="mcidInput">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passwordInput">
+                            <i class="bi-key"></i>
+                            <b>Password (Do NOT enter your Minecraft password)</b>
+                        </label>
+                        <input class="form-control" type="password" id="passwordInput">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passwordInput2">
+                            <i class="bi-key-fill"></i>
+                            <b>Confirm Password</b>
+                        </label>
+                        <input class="form-control" type="password" id="passwordInput2">
+                    </div>
+
+                    <div class="alert alert-danger" id="emailAlert" style="display: none"></div>
+
+                    <button class="btn btn-success disabled" id="signupButton">
+                        <i class="bi-check-circle-fill"></i>
+                        Sign up
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="mcidInput">
-                <i class="bi-tag"></i>
-                <b>Your MCID</b>
-            </label>
-            <input class="form-control" type="text" id="mcidInput">
-        </div>
-
-        <div class="mb-3">
-            <label for="passwordInput">
-                <i class="bi-key"></i>
-                <b>Password (Do NOT enter your Minecraft password)</b>
-            </label>
-            <input class="form-control" type="password" id="passwordInput">
-        </div>
-
-        <div class="mb-3">
-            <label for="passwordInput2">
-                <i class="bi-key-fill"></i>
-                <b>Confirm Password</b>
-            </label>
-            <input class="form-control" type="password" id="passwordInput2">
-        </div>
-
-        <div class="alert alert-danger" id="emailAlert" style="display: none"></div>
-
-        <button class="btn btn-success disabled" id="signupButton">
-            <i class="bi-check-circle-fill"></i>
-            Sign up
-        </button>
     </div>
 </div>
 

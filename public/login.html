@@ -27,43 +27,49 @@
 
 <nav id="navbar"></nav>
 
-<div class="p-3 rounded shadow" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <h2 class="mb-3">
-        <img src="favicon.ico" alt="MCOnlineJudge Logo">
-        MCOnlineJudge Log in
-    </h2>
-    <div class="mb-3 p-3 border rounded-1" style="text-align: left">
-        <div class="mb-3">
-            <label for="emailInput">
-                <i class="bi-envelope-at"></i>
-                <b>E-mail Address</b>
-            </label>
-            <input class="form-control" type="email" id="emailInput">
+<div class="p-3 container" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-12">
+            <div class="p-3 modal-content rounded-1 shadow">
+                <h2 class="mb-3">
+                    <img src="favicon.ico" alt="MCOnlineJudge Logo">
+                    MCOnlineJudge Log in
+                </h2>
+                <div class="mb-3 p-3 border rounded-1" style="text-align: left">
+                    <div class="mb-3">
+                        <label for="emailInput">
+                            <i class="bi-envelope-at"></i>
+                            <b>E-mail Address</b>
+                        </label>
+                        <input class="form-control" type="email" id="emailInput">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passwordInput">
+                            <i class="bi-key"></i>
+                            <b>Password</b>
+                        </label>
+                        <input class="form-control" type="password" id="passwordInput">
+                    </div>
+
+                    <p>
+                        <a href="/recovery.html">Forgot Password?</a>
+                    </p>
+
+                    <div class="alert alert-danger" style="display: none" id="login-alert"></div>
+
+                    <button class="btn btn-success disabled me-3" id="loginButton">
+                        <i class="bi-arrow-right-square"></i>
+                        Log in
+                    </button>
+
+                    <a class="btn btn-secondary" id="signupButton" href="/signup.html">
+                        <i class="bi-person-fill-add"></i>
+                        Sign up
+                    </a>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="passwordInput">
-                <i class="bi-key"></i>
-                <b>Password</b>
-            </label>
-            <input class="form-control" type="password" id="passwordInput">
-        </div>
-
-        <p>
-            <a href="/recovery.html">Forgot Password?</a>
-        </p>
-
-        <div class="alert alert-danger" style="display: none" id="login-alert"></div>
-
-        <button class="btn btn-success disabled me-3" id="loginButton">
-            <i class="bi-arrow-right-square"></i>
-            Log in
-        </button>
-
-        <a class="btn btn-secondary" id="signupButton" href="/signup.html">
-            <i class="bi-person-fill-add"></i>
-            Sign up
-        </a>
     </div>
 </div>
 
