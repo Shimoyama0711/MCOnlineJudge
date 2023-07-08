@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -145,7 +146,7 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "INSERT INTO sources (uuid, problem, judge_id, date, body, status) VALUES (?, ?, ?, ?, ?, ?)";
+            String SQL = "INSERT INTO mconlinejudge.sources (uuid, problem, judge_id, date, body, status) VALUES (?, ?, ?, ?, ?, ?)";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);
@@ -226,17 +227,20 @@ class MyHandler implements HttpHandler {
 
     /**
      * @param problem 問題ID
-     * @param uuid 保存したJavaファイルのuuid
+     * @param judgeId 保存したJavaファイルのuuid
      * @return 問題に正解したかどうか
      * @throws IOException ファイルの入出力エラー時に例外を発生させます
      */
-    public static boolean judge(String problem, String uuid) throws IOException {
-        boolean flag = true;
+    public static boolean judge(String problem, String judgeId) throws IOException {
+        boolean result = true;
 
         File dir = new File("./servlet/testCase/" + problem); // 問題に対応するファイルディレクトリ
         File[] testCases = dir.listFiles(); // ディレクトリの中のファイル一覧
 
         assert testCases != null;
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
 
         for (File testCase : testCases) {
             String name = testCase.getName();
@@ -247,7 +251,7 @@ class MyHandler implements HttpHandler {
                 int lastDot = name.lastIndexOf(".");
                 String sub = name.substring(0, lastDot); // 拡張子を除いたファイル名
 
-                ProcessBuilder pb = new ProcessBuilder("java", uuid);
+                ProcessBuilder pb = new ProcessBuilder("java", judgeId);
 
                 pb.directory(new File("./servlet"));
                 File in = new File("./servlet/testCase/" + problem + "/" + sub + ".txt");
@@ -260,12 +264,21 @@ class MyHandler implements HttpHandler {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.forName("MS932")));
 
                 // 既に false ならば無視
-                if (flag)
-                    flag = compare2BR(outReader, reader);
+                boolean flag = compare2BR(outReader, reader);
+
+                if (flag) {
+                    node.put(sub, "AC");
+                } else {
+                    result = false;
+                    node.put(sub, "WA");
+                }
             }
         }
 
-        return flag;
+        String json = mapper.writeValueAsString(node);
+        updateCases(judgeId, json);
+
+        return result;
     }
 
     /**
@@ -318,12 +331,32 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "UPDATE sources SET status = ? WHERE judge_id = ?";
+            String SQL = "UPDATE mconlinejudge.sources SET status = ? WHERE judge_id = ?";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);
             PreparedStatement ps = conn.prepareStatement(SQL);
             ps.setString(1, status);
+            ps.setString(2, judgeId);
+
+            ps.executeUpdate();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void updateCases(String judgeId, String json) {
+        try {
+            String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
+            String USER = "root";
+            String PASS = "BTcfrLkK1FFU";
+            String SQL = "UPDATE mconlinejudge.sources SET cases = ? WHERE judge_id = ?";
+
+            Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
+            conn.setAutoCommit(true);
+            PreparedStatement ps = conn.prepareStatement(SQL);
+            ps.setString(1, json);
             ps.setString(2, judgeId);
 
             ps.executeUpdate();
