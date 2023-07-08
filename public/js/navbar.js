@@ -13,9 +13,9 @@ $(function () {
 
         if (json2.mcid !== null) {
             let name = json2.mcid;
-            login.attr("href", `/users/${name}`);
+            login.attr("href", `/me`);
             login.html(`
-                <img alt="Your Skin" src="https://crafatar.com/avatars/${uuid}?overlay=true" width="24px" height="24px">
+                <img alt="${name}" src="https://crafatar.com/avatars/${uuid}?overlay=true" width="24px" height="24px">
                 ${name} さん
             `);
         }

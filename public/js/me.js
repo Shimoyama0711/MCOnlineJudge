@@ -6,10 +6,10 @@ $(function () {
     $.ajax({
         url: "/get-user-from-uuid",
         type: "POST",
-        dataType: "text",
+        dataType: "json",
         data: JSON.stringify({uuid: uuid})
     }).done(function (data) {
-        const json = JSON.parse(data);
+        const json = JSON.parse(JSON.stringify(data));
 
         console.log(json);
 
