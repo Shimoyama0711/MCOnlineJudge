@@ -76,11 +76,16 @@ function addRows() {
                         </span>
                     </td>
                     <td style="text-align: center" class="${className}"><code>${score}</code></td>
+                    <td style="text-align: center">
+                        <a class="btn btn-secondary" href="/submission/${obj["judge_id"]}">
+                            <i class="bi-chat-square-dots-fill"></i>
+                        </a>
+                    </td>
                 </tr>
             `);
             }
 
-            console.log(data);
+            // console.log(data);
         }).fail(function(a, b, c) {
             console.log(a);
             console.log(b);
