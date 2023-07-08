@@ -112,6 +112,15 @@ serveTls(async (req) => {
         } else return status405;
     }
 
+    if (path === "/get-user-from-mcid") {
+        if (method === "POST") {
+            const json = await req.json();
+            const mcid = json.mcid;
+
+            return await getUserFromMCID(mcid);
+        } else return status405;
+    }
+
     if (path === "/get-user-from-uuid") {
         if (method === "POST") {
             const json = await req.json();
@@ -151,8 +160,41 @@ serveTls(async (req) => {
         } else return status405;
     }
 
-    if (path.startsWith("/users/")) {
-        const text = await Deno.readTextFile("./public/users.html");
+    if (path === "/get-source-from-judge-id") {
+        if (method === "POST") {
+            const json = await req.json();
+            const judgeId = json.judge_id;
+
+            return await getSourceFromJudgeId(judgeId);
+        } else return status405;
+    }
+
+    if (path === "/me") {
+        const text = await Deno.readTextFile("./public/me.html");
+        return new Response(text, {
+            status: 200,
+            headers: {
+                "Content-Type": "text/html"
+            }
+        });
+    }
+
+    // FIXME: 一旦ユーザー一覧は閉鎖 //
+
+    /*
+    if (path.startsWith("/user/")) {
+        const text = await Deno.readTextFile("./public/me.html");
+        return new Response(text, {
+            status: 200,
+            headers: {
+                "Content-Type": "text/html"
+            }
+        });
+    }
+     */
+
+    if (path.startsWith("/submission/")) {
+        const text = await Deno.readTextFile("./public/submission.html");
         return new Response(text, {
             status: 200,
             headers: {
@@ -307,6 +349,26 @@ async function getUserFromEmail(email) {
     });
 }
 
+async function getUserFromMCID(mcid) {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.users WHERE mcid='${mcid}'`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    const result = objects[0];
+    msg = JSON.stringify(result);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
 async function getUserFromUUID(uuid) {
     let status = 200;
     let msg = "";
@@ -395,6 +457,26 @@ async function getSourcesFromUUID(uuid) {
     });
 
     msg = JSON.stringify(objects);
+
+    return new Response(msg, {
+        status: status,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function getSourceFromJudgeId(judgeId) {
+    let status = 200;
+    let msg = "";
+
+    const objects = await client.query(`SELECT * FROM mconlinejudge.sources WHERE judge_id='${judgeId}'`).catch(function () {
+        status = 400;
+        msg = "Bad Request";
+    });
+
+    const result = objects[0];
+    msg = JSON.stringify(result);
 
     return new Response(msg, {
         status: status,
