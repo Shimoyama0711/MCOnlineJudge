@@ -61,43 +61,36 @@ class MyHandler implements HttpHandler {
             if (t.getRequestURI().toString().equals("/judge")) {
                 ObjectMapper mapper = new ObjectMapper();
 
-                try {
-                    JsonNode node = mapper.readValue(json, JsonNode.class);
-                    String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-                    SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                JsonNode node = mapper.readValue(json, JsonNode.class);
 
-                    String uuid = node.get("uuid").asText();
-                    String judgeId = randomUUID();
-                    String problem = node.get("problem").asText();
-                    Date date = sdf.parse(node.get("date").asText());
-                    String body = node.get("body").asText();
+                String uuid = node.get("uuid").asText();
+                String judgeId = randomUUID();
+                String problem = node.get("problem").asText();
+                String date = node.get("date").asText();
+                String body = node.get("body").asText();
 
-                    // ソース一覧のデータベースに追加 //
-                    insertSourceDatabase(uuid, problem, judgeId, sdf2.format(date), body, "Judge...");
+                // ソース一覧のデータベースに追加 //
+                insertSourceDatabase(uuid, problem, judgeId, date, body, "Judge...");
 
-                    // ファイルを保存 //
-                    saveFile(judgeId, body);
+                // ファイルを保存 //
+                saveFile(judgeId, body);
 
-                    boolean flagCompile = compile(judgeId);
+                boolean flagCompile = compile(judgeId);
 
-                    // コンパイルに成功したか //
-                    if (flagCompile) {
-                        // ジャッジに成功したか //
-                        if (judge(problem, judgeId)) {
-                            updateStatus(judgeId, "AC");
-                        } else {
-                            updateStatus(judgeId, "WA");
-                        }
+                // コンパイルに成功したか //
+                if (flagCompile) {
+                    // ジャッジに成功したか //
+                    if (judge(problem, judgeId)) {
+                        updateStatus(judgeId, "AC");
                     } else {
-                        updateStatus(judgeId, "CE");
+                        updateStatus(judgeId, "WA");
                     }
-
-                    // 一時ファイルを削除 //
-                    deleteFile(judgeId, flagCompile);
-                } catch (ParseException e) {
-                    System.out.println(e.getMessage());
+                } else {
+                    updateStatus(judgeId, "CE");
                 }
+
+                // 一時ファイルを削除 //
+                deleteFile(judgeId, flagCompile);
             }
         }
 

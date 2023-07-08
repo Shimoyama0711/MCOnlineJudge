@@ -36,11 +36,11 @@ $(function () {
         const array = {
             uuid: getCookieFromKey("uuid"),
             problem: location.pathname.replace("/problem/", "").replace(".html", ""),
-            date: new Date(),
+            date: getFormattedDate(new Date()),
             body: editor.getValue()
         };
 
-        // console.log(JSON.stringify(array));
+        console.log(JSON.stringify(array));
 
         $.ajax({
             url: "/send-judge",
@@ -48,7 +48,7 @@ $(function () {
             dataType: "text",
             data: JSON.stringify(array)
         }).done(function() {
-            console.log("Ajax Successfully!");
+            // console.log("Ajax Successfully!");
             submitButton.addClass("disabled");
             submitButton.removeClass("btn-success");
             submitButton.addClass("btn-info");
@@ -122,4 +122,15 @@ function replaceDetail(problem) {
         console.log(b);
         console.log(c);
     });
+}
+
+function getFormattedDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
 }
