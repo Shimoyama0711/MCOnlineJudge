@@ -32,7 +32,7 @@ $(function () {
         //console.log(createdAt);
 
         h1.html(`
-            <img alt="Your Skin" src="https://crafatar.com/avatars/${uuid}?overlay=true" width="36px" height="36px">
+            <img alt="Your Skin" src="https://mc-heads.net/avatar/${uuid}" width="36px" height="36px">
             ${json["mcid"]}
         `);
 

@@ -46,7 +46,7 @@ function updateTable(judgeId) {
 
         tableAuthor.html(`
             <a href="/user/">
-                <img src="https://crafatar.com/avatars/${uuid}?overlay=true" alt="${mcid}" width="24" height="24">
+                <img src="https://mc-heads.net/avatar/${uuid}" alt="${mcid}" width="24" height="24">
                 ${mcid}
             </a>
         `);

@@ -15,7 +15,7 @@ $(function () {
             let name = json2.mcid;
             login.attr("href", `/me`);
             login.html(`
-                <img alt="${name}" src="https://crafatar.com/avatars/${uuid}?overlay=true" width="24px" height="24px">
+                <img alt="${name}" src="https://mc-heads.net/avatar/${uuid}" width="24px" height="24px">
                 ${name} さん
             `);
         }
