@@ -46,15 +46,15 @@
 <main class="m-3 p-3 mx-auto border-start border-end shadow" style="width: 80%">
     <div class="container-fluid">
         <div class="row">
-            <h1 id="problem-title"></h1>
+            <h1 id="problem-title">[SECTION]-[NUMBER] - [TITLE]</h1>
         </div>
         <hr>
         <div class="row">
             <p>
-                実行時間制限: <code id="problem-time"></code> sec / メモリ制限: <code id="problem-memory"></code> MB / 難易度: <code id="problem-difficulty"></code>
+                実行時間制限: <code id="problem-time">NaN</code> sec / メモリ制限: <code id="problem-memory">NaN</code> MB / 難易度: <code id="problem-difficulty">NaN</code>
             </p>
             <p id="problem-score">
-                配点: $$ 点
+                配点: $\textrm{NaN}$ 点
             </p>
         </div>
         <hr>
@@ -63,8 +63,8 @@
                 <i class="bi-question-circle"></i>
                 問題文
             </h4>
-            <p>文字列 $S$ と整数 $a,\ b$ が与えられます。</p>
-            <p>1行目に $S$ を、2行目に $a+b$ の計算結果を出力してください。</p>
+            <p>整数 $N$ が与えられます。</p>
+            <p>各整数 $i, j\ (1 \leq i, j \leq N)$ について、$i$ 行目 $j$ 列目に $i \times j$ の結果を出力してください。</p>
         </div>
         <div class="row mb-3 ms-auto">
             <h4>
@@ -72,9 +72,7 @@
                 制約
             </h4>
             <ul>
-                <li>$S$ は英小文字のみからなる。</li>
-                <li>$1 \leq |S| \leq 50$</li>
-                <li>$-100 \leq a,\ b \leq 100$</li>
+                <li>$1 \leq N \leq 100$</li>
             </ul>
         </div>
         <hr>
@@ -83,10 +81,9 @@
                 <i class="bi-keyboard"></i>
                 入力
             </h4>
-            <p>入力は以下の形式で与えられる。</p>
+            <p>ここに入力をドロップ</p>
             <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq-tex">
-                $S$ <br>
-                $a$ $b$
+                $N$
             </p>
         </div>
         <div class="row mb-3 ms-auto">
@@ -94,7 +91,7 @@
                 <i class="bi-terminal"></i>
                 出力
             </h4>
-            <p>問題文の形式に沿って出力せよ。</p>
+            <p>$N$ 行にわたって出力せよ。</p>
         </div>
         <hr>
         <div class="row mb-3 ms-auto">
@@ -111,13 +108,7 @@
                     <div class="card card-body">
                         <ul>
                             <li>
-                                <a href="#">基本的な文法</a>
-                            </li>
-                            <li>
-                                <a href="#">入力の使い方</a>
-                            </li>
-                            <li>
-                                <a href="#">文字の出力方法</a>
+                                <a href="#">for文の使い方</a>
                             </li>
                         </ul>
                     </div>
@@ -129,35 +120,23 @@
             <div class="row mb-3 ms-auto">
                 <h4>入力例1</h4>
                 <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    hello <br>
-                    5 3
+                    9
                 </p>
             </div>
             <div class="row mb-3 ms-auto">
                 <h4>出力例1</h4>
                 <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    hello <br>
-                    8
+                    1 2 3 4 5 6 7 8 9<br>
+                    2 4 6 8 10 12 14 16 18<br>
+                    3 6 9 12 15 18 21 24 27<br>
+                    4 8 12 16 20 24 28 32 36<br>
+                    5 10 15 20 25 30 35 40 45<br>
+                    6 12 18 24 30 36 42 48 54<br>
+                    7 14 21 28 35 42 49 56 63<br>
+                    8 16 24 32 40 48 56 64 72<br>
+                    9 18 27 36 45 54 63 72 81
                 </p>
-                <p>改行を忘れないようにしましょう。</p>
-            </div>
-        </div>
-        <hr>
-        <div class="mb-3">
-            <div class="row mb-3 ms-auto">
-                <h4>入力例2</h4>
-                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    hogehoge <br>
-                    -100 100
-                </p>
-            </div>
-            <div class="row mb-3 ms-auto">
-                <h4>出力例2</h4>
-                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    hogehoge <br>
-                    0
-                </p>
-                <p>負の数が与えられる場合もあります。</p>
+                <p>空白や改行に気をつけましょう。</p>
             </div>
         </div>
     </div>
