@@ -75,7 +75,7 @@ function addRows() {
                             ${obj["status"]}
                         </span>
                     </td>
-                    <td style="text-align: center" class="${className}"><code>${score}</code></td>
+                    <td style="text-align: center" class="${className}"><code>${status === "AC" ? score : 0}</code></td>
                     <td style="text-align: center">
                         <a class="btn btn-secondary" href="/submission/${obj["judge_id"]}">
                             <i class="bi-chat-square-dots-fill"></i>

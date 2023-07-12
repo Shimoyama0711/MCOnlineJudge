@@ -123,7 +123,7 @@ function updateTable(judgeId) {
                 `);
 
             tableScore.html(`
-                    <code>${score}</code>
+                    <code>${status === "AC" ? score : 0}</code>
                 `);
 
             const casesJson = JSON.parse(json["cases"]);
