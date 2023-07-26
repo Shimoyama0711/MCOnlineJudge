@@ -1,5 +1,3 @@
-package me.Shimoyama0711.MCOnlineJudge;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -9,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
+public class Sphere extends JavaPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
