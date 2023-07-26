@@ -14,13 +14,21 @@ public class MCCompile {
         if (compileFlag) {
             boolean manifestFlag = createManifestFile(judgeId);
 
-            if (!manifestFlag) {
+            if (manifestFlag) {
+                boolean buildFlag = buildJarFile(judgeId);
+
+                if (buildFlag) {
+
+                }
+            } else {
                 System.out.println("MANIFEST.MF の作成に失敗！");
+                return;
             }
         }
     }
 
     /**
+     * コンパイル
      * @param uuid コンパイルするJavaファイル名
      */
     public static boolean compile(String uuid) throws IOException {
@@ -53,6 +61,7 @@ public class MCCompile {
 
 
     /**
+     * マニフェストファイルの作成
      * @param uuid プレイヤーのUUIDが含まれたJavaファイル名
      */
     public static boolean createManifestFile(String uuid) throws IOException {
@@ -79,6 +88,39 @@ public class MCCompile {
         writer.close();
 
         return true;
+    }
+
+    /**
+     * jar ファイルを作成
+     * @param uuid
+     * @return
+     */
+    public static boolean buildJarFile(String uuid) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", uuid + ".jar", "./META-INF/MANIFEST.MF", "*.class", "*.yml");
+        Process process = pb.start();
+
+        boolean flag = true;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.forName("MS932")))) {
+            String line = reader.readLine();
+
+            while (line != null) {
+                System.out.println(line);
+                line = reader.readLine();
+            }
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream(), Charset.forName("MS932")))) {
+            String line = reader.readLine();
+
+            while (line != null) {
+                if (line.length() > 0)
+                    flag = false;
+                line = reader.readLine();
+            }
+        }
+
+        return flag;
     }
 
     /**
