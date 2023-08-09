@@ -1,5 +1,8 @@
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 import java.util.UUID;
 
@@ -18,21 +21,26 @@ public class MCCompile {
                 boolean buildFlag = buildJarFile(judgeId);
 
                 if (buildFlag) {
+                    boolean copyFlag = copyJarFile(judgeId);
 
+                    if (copyFlag) {
+                        boolean deleteFlag = deleteJarFile(judgeId);
+
+                        // return;
+                    }
                 }
             } else {
                 System.out.println("MANIFEST.MF の作成に失敗！");
-                return;
             }
         }
     }
 
     /**
      * コンパイル
-     * @param uuid コンパイルするJavaファイル名
+     * @param judgeId コンパイルするJavaファイル名（ジャッジのUUID）
      */
-    public static boolean compile(String uuid) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "-cp", "./lib/spigot-api-1.20.1-R0.1-SNAPSHOT.jar", "./src/" + uuid + ".java");
+    public static boolean compile(String judgeId) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("javac", "-cp", "./lib/spigot-api-1.20.1-R0.1-SNAPSHOT.jar", "./src/" + judgeId + ".java");
         Process process = pb.start();
 
         boolean flag = true;
@@ -62,9 +70,9 @@ public class MCCompile {
 
     /**
      * マニフェストファイルの作成
-     * @param uuid プレイヤーのUUIDが含まれたJavaファイル名
+     * @param judgeId ジャッジのUUIDが含まれたJavaファイル名
      */
-    public static boolean createManifestFile(String uuid) throws IOException {
+    public static boolean createManifestFile(String judgeId) throws IOException {
         File dir = new File("./src/META-INF");
 
         if (!dir.exists()) {
@@ -84,7 +92,7 @@ public class MCCompile {
         }
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(manifestFile));
-        writer.write("Main-Class: " + uuid + ".class\n");
+        writer.write("Main-Class: " + judgeId + ".class\n");
         writer.close();
 
         return true;
@@ -92,11 +100,11 @@ public class MCCompile {
 
     /**
      * jar ファイルを作成
-     * @param uuid
-     * @return
+     * @param judgeId ジャッジのUUID
+     * @return ビルドに成功したかどうか？
      */
-    public static boolean buildJarFile(String uuid) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", uuid + ".jar", "./META-INF/MANIFEST.MF", "*.class", "*.yml");
+    public static boolean buildJarFile(String judgeId) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/META-INF/MANIFEST.MF", "./src/" + judgeId + ".class", "./src/*.yml");
         Process process = pb.start();
 
         boolean flag = true;
@@ -121,6 +129,42 @@ public class MCCompile {
         }
 
         return flag;
+    }
+
+    /**
+     * [judgeId].jar をサーバーの plugin フォルダーにコピーします
+     * @param judgeId ジャッジのUUID
+     * @return コピーに成功したかどうか？
+     */
+    public static boolean copyJarFile(String judgeId) {
+        Path from = Paths.get(judgeId + ".jar");
+        // Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/" + judgeId + ".jar");
+        Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/TestPlugin.jar");
+
+        try {
+            Files.copy(from, to);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * [judgeId].jar の元データを削除します
+     * @param judgeId ジャッジのUUID
+     * @return JAR ファイルの削除に成功したかどうか？
+     */
+    public static boolean deleteJarFile(String judgeId) {
+        File jarFile = new File(judgeId + ".jar");
+
+        if (!jarFile.delete()) {
+            System.out.println(judgeId + ".jar の削除に失敗しました");
+            return false;
+        }
+
+        return true;
     }
 
     /**
