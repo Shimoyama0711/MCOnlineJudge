@@ -89,6 +89,21 @@ class MyHandler implements HttpHandler {
                 // 一時ファイルを削除 //
                 deleteFile(judgeId, flagCompile);
             }
+
+            if (t.getRequestURI().toString().equals("/mc-judge")) {
+                ObjectMapper mapper = new ObjectMapper();
+
+                JsonNode node = mapper.readValue(json, JsonNode.class);
+
+                String uuid = node.get("uuid").asText();
+                String judgeId = randomUUID();
+                String problem = node.get("problem").asText();
+                String date = node.get("date").asText();
+                String body = node.get("body").asText();
+
+                // ソース一覧のデータベースに追加 //
+                insertSourceDatabase(uuid, problem, judgeId, date, body, "Judge...");
+            }
         }
 
         String resBody = switch (t.getRequestURI().toString()) {
@@ -161,6 +176,16 @@ class MyHandler implements HttpHandler {
      */
     public static void saveFile(String uuid, String body) throws IOException {
         File judgeFile = new File("./servlet/" + uuid + ".java");
+        body = body.replace("class Main", "class " + uuid);
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
+        bw.write(body);
+        bw.flush();
+        bw.close();
+    }
+
+    public static void saveMCFile(String uuid, String body) throws IOException {
+        File judgeFile = new File("./src/" + uuid + ".java");
         body = body.replace("class Main", "class " + uuid);
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
