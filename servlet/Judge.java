@@ -98,10 +98,10 @@ public class Judge {
     }
 
     /**
-     * @param uuid コンパイルするJavaファイル名
+     * @param judgeId ジャッジID
      */
-    public static boolean compile(String uuid) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "./servlet/" + uuid + ".java");
+    public static boolean compile(String judgeId) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("javac", "./servlet/" + judgeId + ".java");
         Process process = pb.start();
 
         boolean flag = true;

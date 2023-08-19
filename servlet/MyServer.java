@@ -103,6 +103,9 @@ class MyHandler implements HttpHandler {
 
                 // ソース一覧のデータベースに追加 //
                 insertSourceDatabase(uuid, problem, judgeId, date, body, "Judge...");
+
+                // ファイルを保存 //
+                saveMCFile(judgeId, body);
             }
         }
 
@@ -142,6 +145,7 @@ class MyHandler implements HttpHandler {
      * sources テーブルに挿入します
      * @param uuid ユーザーのuuid
      * @param problem 問題のID
+     * @param judgeId ジャッジID
      * @param date 日付の文字列
      * @param body 本文
      * @param status 状態
@@ -170,13 +174,15 @@ class MyHandler implements HttpHandler {
         }
     }
 
+    // NORMAL JUDGE FUNCTIONS //
+
     /**
-     * @param uuid ハイフンなしのUUID形式
+     * @param judgeId ジャッジID。ハイフンなしのUUID形式
      * @param body 本文。
      */
-    public static void saveFile(String uuid, String body) throws IOException {
-        File judgeFile = new File("./servlet/" + uuid + ".java");
-        body = body.replace("class Main", "class " + uuid);
+    public static void saveFile(String judgeId, String body) throws IOException {
+        File judgeFile = new File("./servlet/" + judgeId + ".java");
+        body = body.replace("class Main", "class " + judgeId);
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
         bw.write(body);
@@ -184,9 +190,9 @@ class MyHandler implements HttpHandler {
         bw.close();
     }
 
-    public static void saveMCFile(String uuid, String body) throws IOException {
-        File judgeFile = new File("./src/" + uuid + ".java");
-        body = body.replace("class Main", "class " + uuid);
+    public static void saveMCFile(String judgeId, String body) throws IOException {
+        File judgeFile = new File("./src/" + judgeId + "/" + judgeId + ".java");
+        body = body.replace("class Main", "class " + judgeId);
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
         bw.write(body);
@@ -195,11 +201,11 @@ class MyHandler implements HttpHandler {
     }
 
     /**
-     * @param uuid ハイフンなしのUUID形式
+     * @param judgeId ジャッジID。ハイフンなしのUUID形式
      */
-    public static void deleteFile(String uuid, boolean compileSuccess) {
-        File javaFile = new File("./servlet/" + uuid + ".java");
-        File classFile = new File("./servlet/" + uuid + ".class");
+    public static void deleteFile(String judgeId, boolean compileSuccess) {
+        File javaFile = new File("./servlet/" + judgeId + ".java");
+        File classFile = new File("./servlet/" + judgeId + ".class");
 
         if (!javaFile.delete())
             System.out.println(javaFile.getName() + " の削除に失敗しました");
@@ -210,10 +216,10 @@ class MyHandler implements HttpHandler {
     }
 
     /**
-     * @param uuid コンパイルするJavaファイル名
+     * @param judgeId ジャッジID。ハイフンなしのUUID形式
      */
-    public static boolean compile(String uuid) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "./servlet/" + uuid + ".java");
+    public static boolean compile(String judgeId) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("javac", "./servlet/" + judgeId + ".java");
         Process process = pb.start();
 
         boolean flag = true;
@@ -296,6 +302,12 @@ class MyHandler implements HttpHandler {
         return result;
     }
 
+    // MINECRAFT JUDGE FUNCTIONS //
+
+
+
+    // OTHER FUNCTIONS //
+
     /**
      * @return ハイフン抜きでかつ1文字目が 'a'～'f' のUUIDが返されます
      */
@@ -361,6 +373,11 @@ class MyHandler implements HttpHandler {
         }
     }
 
+    /**
+     * 対応するジャッジIDの cases 部分を変更します
+     * @param judgeId ジャッジID。
+     * @param json JSON形式で cases を変更
+     */
     public static void updateCases(String judgeId, String json) {
         try {
             String sqlURL = "jdbc:mysql://mysql-1.c2b8kou8mtea.ap-northeast-1.rds.amazonaws.com:3306/mconlinejudge";

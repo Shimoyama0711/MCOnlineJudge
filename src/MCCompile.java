@@ -8,25 +8,27 @@ import java.util.UUID;
 
 public class MCCompile {
     public static void main(String[] args) throws IOException {
-        String judgeId = "Main";
+        String judgeId = "Temporary";
         // String judgeId = randomUUID();
-        File mainFile = new File("./src/Main.java");
+        // File mainFile = new File("./src/" + judgeId + "/" + judgeId + ".java");
 
-        boolean compileFlag = compile(judgeId);
+        boolean compileFlag = compileMC(judgeId);
 
         if (compileFlag) {
             boolean manifestFlag = createManifestFile(judgeId);
 
             if (manifestFlag) {
-                boolean buildFlag = buildJarFile(judgeId);
+                boolean yamlFlag = createYAMLFile(judgeId);
 
-                if (buildFlag) {
-                    boolean copyFlag = copyJarFile(judgeId);
+                if (yamlFlag) {
+                    boolean buildFlag = buildJarFile(judgeId);
 
-                    if (copyFlag) {
-                        boolean deleteFlag = deleteJarFile(judgeId);
+                    if (buildFlag) {
+                        boolean copyFlag = copyJarFile(judgeId);
 
-                        // return;
+                        if (copyFlag) {
+                            boolean deleteFlag = deleteJarFile(judgeId);
+                        }
                     }
                 }
             } else {
@@ -39,8 +41,10 @@ public class MCCompile {
      * コンパイル
      * @param judgeId コンパイルするJavaファイル名（ジャッジのUUID）
      */
-    public static boolean compile(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "-cp", "./lib/spigot-api-1.20.1-R0.1-SNAPSHOT.jar", "./src/" + judgeId + ".java");
+    public static boolean compileMC(String judgeId) throws IOException {
+        File dir = new File("./" + judgeId);
+
+        ProcessBuilder pb = new ProcessBuilder("javac", "-d", "./", "-cp", "./lib/spigot-api-1.20.1-R0.1-SNAPSHOT.jar", "./src/" + judgeId + "/" + judgeId + ".java");
         Process process = pb.start();
 
         boolean flag = true;
@@ -73,7 +77,7 @@ public class MCCompile {
      * @param judgeId ジャッジのUUIDが含まれたJavaファイル名
      */
     public static boolean createManifestFile(String judgeId) throws IOException {
-        File dir = new File("./src/META-INF");
+        File dir = new File("./src/" + judgeId + "/META-INF");
 
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -82,7 +86,7 @@ public class MCCompile {
             }
         }
 
-        File manifestFile = new File("./src/META-INF/MANIFEST.MF");
+        File manifestFile = new File("./src/" + judgeId + "/META-INF/MANIFEST.MF");
 
         if (!manifestFile.exists()) {
             if (!manifestFile.createNewFile()) {
@@ -92,19 +96,53 @@ public class MCCompile {
         }
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(manifestFile));
-        writer.write("Main-Class: " + judgeId + ".class\n");
+        writer.write("Main-Class: " + judgeId + "." + judgeId + ".class\n");
         writer.close();
 
         return true;
     }
 
     /**
-     * jar ファイルを作成
-     * @param judgeId ジャッジのUUID
+     * プレイヤーのUUIDに対応したYAMLファイルを作成します
+     * @param judgeId ジャッジID
+     * @return YAMLファイルの作成に成功したか？
+     */
+    public static boolean createYAMLFile(String judgeId) throws IOException {
+        String body =
+                "name: " + judgeId + "\n" +
+                "main: " + judgeId + "." + judgeId + "\n" +
+                "version: 1.0\n" +
+                "api-version: 1.20\n" +
+                "commands:\n" +
+                "  " + judgeId + ":\n" +
+                "    usage: This is a MCOnlineJudge Plugin Command.";
+
+        File yamlFile = new File("./plugin.yml");
+
+        if (!yamlFile.exists()) {
+            if (!yamlFile.createNewFile()) {
+                System.out.println("YAMLファイルの作成に失敗しました");
+                return false;
+            }
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(yamlFile));
+        writer.write(body);
+
+        writer.flush();
+        writer.close();
+
+        return true;
+    }
+
+    /**
+     * jarファイルをビルドします
+     * @param judgeId ジャッジID
      * @return ビルドに成功したかどうか？
      */
     public static boolean buildJarFile(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/META-INF/MANIFEST.MF", "./src/" + judgeId + ".class", "./src/*.yml");
+        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/" + judgeId + "/META-INF/MANIFEST.MF", "./" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
+        // ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
         Process process = pb.start();
 
         boolean flag = true;
@@ -133,13 +171,13 @@ public class MCCompile {
 
     /**
      * [judgeId].jar をサーバーの plugin フォルダーにコピーします
-     * @param judgeId ジャッジのUUID
+     * @param judgeId プレイヤーのUUID
      * @return コピーに成功したかどうか？
      */
     public static boolean copyJarFile(String judgeId) {
         Path from = Paths.get(judgeId + ".jar");
         // Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/" + judgeId + ".jar");
-        Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/TestPlugin.jar");
+        Path to = Paths.get("C:/Users/Shimoyama Ayumu/Documents/Development/MinecraftServer/[1.20.1]MCOnlineJudge/plugins/" + judgeId + ".jar");
 
         try {
             Files.copy(from, to);
