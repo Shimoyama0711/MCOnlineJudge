@@ -3,8 +3,8 @@ import {Client} from "https://deno.land/x/mysql@v2.11.0/mod.ts"
 import { serveTls } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const client = await new Client().connect({
-    hostname: "127.0.0.1",
-    username: "root",
+    hostname: "mysql-1.c2b8kou8mtea.ap-northeast-1.rds.amazonaws.com",
+    username: "admin",
     db: "mconlinejudge",
     password: "BTcfrLkK1FFU"
 });
