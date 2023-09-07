@@ -1,29 +1,31 @@
 $(function () {
     const login = $("#login");
     const uuid = getCookieFromKey("uuid");
-    const json = JSON.stringify({uuid: uuid});
 
-    $.ajax({
-        url: "/get-user-from-uuid",
-        type: "POST",
-        dataType: "text",
-        data: json
-    }).done(function (data) {
-        const json2 = JSON.parse(data);
+    if (uuid !== undefined) {
+        $.ajax({
+            url: `/get-user-from-uuid?uuid=${uuid}`,
+            type: "GET"
+        }).done(function (data) {
+            console.log(data);
+            const json2 = JSON.parse(JSON.stringify(data));
 
-        if (json2.mcid !== null) {
-            let name = json2.mcid;
-            login.attr("href", `/me`);
-            login.html(`
+            console.log(json2);
+
+            if (json2.mcid !== null) {
+                let name = json2.mcid;
+                login.attr("href", `/me`);
+                login.html(`
                 <img alt="${name}" src="https://mc-heads.net/avatar/${uuid}" width="24px" height="24px">
                 ${name} さん
             `);
-        }
-    }).fail(function (a, b, c) {
-        console.log(a);
-        console.log(b);
-        console.log(c);
-    });
+            }
+        }).fail(function (a, b, c) {
+            console.log(a);
+            console.log(b);
+            console.log(c);
+        });
+    }
 });
 
 function getCookieFromKey(key) {

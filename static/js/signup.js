@@ -46,27 +46,39 @@ $(function () {
         const alert = $("#emailAlert");
 
         // UUID取得 //
-        $.ajax({
-            url: `/get-uuid/${mcid}`,
-            type: "GET",
-            dataType: "text"
-        }).done(function (data) {
-            // console.log(data);
-
-            const tmp = JSON.parse(data);
-            const uuid = tmp["id"];
-            const json = {email: email, mcid: mcid, encrypted: encrypted, uuid: uuid};
-
+        if (mcid !== undefined) {
             $.ajax({
-                url: "/signup",
-                type: "POST",
-                dataType: "text",
-                data: JSON.stringify(json)
+                url: `/get-uuid-from-mcid?mcid=${mcid}`,
+                type: "GET"
             }).done(function (data) {
-                const json = JSON.parse(data);
+                // const tmp = JSON.parse(JSON.stringify(data));
+                const uuid = data["id"];
+                const json = {email: email, mcid: mcid, encrypted: encrypted, uuid: uuid};
 
-                document.cookie = `uuid=${json["uuid"]}`;
-                window.location.href = "./index.html";
+                $.ajax({
+                    url: "/signup",
+                    type: "POST",
+                    data: JSON.stringify(json),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).done(function (data) {
+                    // console.log(data)
+
+                    document.cookie = `uuid=${uuid}`;
+                    window.location.href = "/static/index.html";
+                }).fail(function (a, b, c) {
+                    console.log("[Ajax Failed]");
+                    console.log(a);
+                    console.log(b);
+                    console.log(c);
+
+                    alert.css("display", "");
+                    alert.html(`
+                <i class="bi-exclamation-circle-fill"></i>
+                このEメールアドレスは既に登録されています
+            `);
+                });
             }).fail(function (a, b, c) {
                 console.log("[Ajax Failed]");
                 console.log(a);
@@ -76,21 +88,10 @@ $(function () {
                 alert.css("display", "");
                 alert.html(`
                 <i class="bi-exclamation-circle-fill"></i>
-                このEメールアドレスは既に登録されています
-            `);
-            });
-        }).fail(function (a, b, c) {
-            console.log("[Ajax Failed]");
-            console.log(a);
-            console.log(b);
-            console.log(c);
-
-            alert.css("display", "");
-            alert.html(`
-                <i class="bi-exclamation-circle-fill"></i>
                 このMCIDは存在しません
             `);
-        });
+            });
+        }
     });
 });
 

@@ -39,13 +39,9 @@ $(function () {
                 ログインに成功しました
             `);
 
-            const json2 = {email: emailInput.val()};
-
             $.ajax({
-                url: "/get-user-from-email",
-                type: "POST",
-                dataType: "text",
-                data: JSON.stringify(json2)
+                url: `/get-user-from-email?email=${emailInput.val()}`,
+                type: "GET",
             }).done(function (data) {
                 const json = JSON.parse(data);
                 const uuid = json["uuid"];

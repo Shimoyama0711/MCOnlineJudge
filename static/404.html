@@ -2,17 +2,16 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>TEMPLATE HTML</title>
+    <title>404 Not Found</title>
 
     <!-- Script -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/9a9d8a46b3.js" crossorigin="anonymous"></script>
-    <script src="js/youareanidiot.js"></script>
 
     <script>
         $(function () {
-            $("#navbar").load("/navbar.html");
+            $("#navbar").load("/static/navbar.html");
         });
     </script>
 
@@ -25,23 +24,15 @@
 
 <nav id="navbar"></nav>
 
-<div id="audio-form" class="my-3 p-3 border rounded-0 shadow">
-    <h2>
-        <i class="bi-file-music-fill"></i>
-        Input Audio File
-    </h2>
-
-    <input type="file" class="form-control" id="audioLoader" accept="*/*">
-</div>
-
-<div id="you-are-an-idiot" class="my-3 p-3 border rounded-0 shadow">
-    <h2>You Are An Idiot!</h2>
-
-    <h1>
-        <i class="bi-emoji-smile" id="smile1"></i>
-        <i class="bi-emoji-smile" id="smile2"></i>
-        <i class="bi-emoji-smile" id="smile3"></i>
-    </h1>
+<div style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <h1 class="display-1"><b>404</b></h1>
+    <p>
+        <code>Not Found</code>
+    </p>
+    <a class="btn btn-primary" href="/index.html">
+        <i class="bi-house-fill"></i>
+        Back
+    </a>
 </div>
 
 </body>

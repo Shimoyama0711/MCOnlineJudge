@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>404 Not Found</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>MCOnlineJudge - Docs</title>
 
     <!-- Script -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
@@ -11,7 +13,7 @@
 
     <script>
         $(function () {
-            $("#navbar").load("/navbar.html");
+            $("#navbar").load("/static/navbar.html");
         });
     </script>
 
@@ -24,16 +26,27 @@
 
 <nav id="navbar"></nav>
 
-<div style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <h1 class="display-1"><b>404</b></h1>
-    <p>
-        <code>Not Found</code>
-    </p>
-    <a class="btn btn-primary" href="/index.html">
-        <i class="bi-house-fill"></i>
-        Back
-    </a>
-</div>
+<main class="p-3 container border-start border-end shadow-lg">
+    <div class="row">
+        <div class="m-3 col-md-10 col-sm-12">
+            <div class="modal-content mb-3">
+                <h1>Docs</h1>
+            </div>
+            <hr>
+            <div class="modal-content mb-3">
+                <h3>Getting Started</h3>
+                <ul>
+                    <li>
+                        <a href="/docs/getting_started.html">はじめに</a>
+                    </li>
+                    <li>
+                        <a href="/docs/build_env.html">環境構築</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
 
 </body>
 
