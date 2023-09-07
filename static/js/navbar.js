@@ -12,13 +12,15 @@ $(function () {
 
             console.log(json2);
 
-            if (json2.mcid !== null) {
-                let name = json2.mcid;
-                login.attr("href", `/me`);
-                login.html(`
-                <img alt="${name}" src="https://mc-heads.net/avatar/${uuid}" width="24px" height="24px">
-                ${name} さん
-            `);
+            if (json2 !== null) {
+                if (json2.mcid !== null) {
+                    let name = json2.mcid;
+                    login.attr("href", `/me`);
+                    login.html(`
+                        <img alt="${name}" src="https://mc-heads.net/avatar/${uuid}" width="24px" height="24px">
+                        ${name} さん
+                    `);
+                }
             }
         }).fail(function (a, b, c) {
             console.log(a);

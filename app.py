@@ -21,6 +21,9 @@ def get_user_from_email(email):
     result = cursor.fetchone()
     output_json = json.dumps(result, default=str, indent=4)
 
+    cursor.close()
+    conn.close()
+
     return make_response(output_json), 200, {
         "Content-Type": "application/json"
     }
@@ -39,6 +42,12 @@ def get_user_from_uuid(uuid):
 
     result = cursor.fetchone()
     output_json = json.dumps(result, default=str, indent=4)
+
+    print(result)
+    print(output_json)
+
+    cursor.close()
+    conn.close()
 
     return make_response(output_json), 200, {
         "Content-Type": "application/json"
@@ -80,17 +89,24 @@ def signup(email, mcid, encrypted, uuid):
     now = datetime.now()
     formatted_date = now.strftime("%Y/%m/%d %H:%M:%S")
 
-    conn = mysql.connector.connect(host="127.0.0.1", user="root", password="BTcfrLkK1FFU")
+    try:
+        conn = mysql.connector.connect(host="127.0.0.1", user="root", password="BTcfrLkK1FFU")
 
-    cursor = conn.cursor()
-    cursor.execute(f"INSERT INTO mconlinejudge.users (email, mcid, password, uuid, created_at) VALUES ('{email}', '{mcid}', '{encrypted}', '{uuid}', '{formatted_date}')")
+        cursor = conn.cursor()
+        cursor.execute(f"INSERT INTO mconlinejudge.users (email, mcid, password, uuid, created_at) VALUES ('{email}', '{mcid}', '{encrypted}', '{uuid}', '{formatted_date}')")
 
-    result = cursor.fetchone()
-    output_json = json.dumps(result, default=str, indent=4)
+        conn.commit()
+        cursor.close()
+        conn.close()
 
-    return make_response(output_json), 200, {
-        "Content-Type": "application/json"
-    }
+        return make_response("200 OK"), 200, {
+            "Content-Type": "application/json"
+        }
+    except Exception as e:
+        print(f"Error Occurred: {e}")
+        return make_response("400 User is already registered."), 400, {
+            "Content-Type": "text/plain"
+        }
 
 
 @app.route('/')

@@ -75,9 +75,9 @@ $(function () {
 
                     alert.css("display", "");
                     alert.html(`
-                <i class="bi-exclamation-circle-fill"></i>
-                このEメールアドレスは既に登録されています
-            `);
+                        <i class="bi-exclamation-circle-fill"></i>
+                        このEメールアドレスは既に登録されています
+                    `);
                 });
             }).fail(function (a, b, c) {
                 console.log("[Ajax Failed]");
