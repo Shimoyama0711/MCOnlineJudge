@@ -170,7 +170,7 @@ serveTls(async (req) => {
     }
 
     if (path === "/me") {
-        const text = await Deno.readTextFile("./public/me.html");
+        const text = await Deno.readTextFile("./public/user.html");
         return new Response(text, {
             status: 200,
             headers: {
@@ -183,7 +183,7 @@ serveTls(async (req) => {
 
     /*
     if (path.startsWith("/user/")) {
-        const text = await Deno.readTextFile("./public/me.html");
+        const text = await Deno.readTextFile("./public/user.html");
         return new Response(text, {
             status: 200,
             headers: {

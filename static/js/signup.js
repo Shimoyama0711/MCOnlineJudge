@@ -36,73 +36,7 @@ $(function () {
             signupButton.addClass("disabled");
         }
     });
-
-    signupButton.on("click", async function () {
-        const email = emailInput.val();
-        const mcid = mcidInput.val();
-        const password = passwordInput.val();
-        const encrypted = await sha256(password);
-
-        const alert = $("#emailAlert");
-
-        // UUID取得 //
-        if (mcid !== undefined) {
-            $.ajax({
-                url: `/get-uuid-from-mcid?mcid=${mcid}`,
-                type: "GET"
-            }).done(function (data) {
-                // const tmp = JSON.parse(JSON.stringify(data));
-                const uuid = data["id"];
-                const json = {email: email, mcid: mcid, encrypted: encrypted, uuid: uuid};
-
-                $.ajax({
-                    url: "/signup",
-                    type: "POST",
-                    data: JSON.stringify(json),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).done(function (data) {
-                    // console.log(data)
-
-                    document.cookie = `uuid=${uuid}`;
-                    window.location.href = "/static/index.html";
-                }).fail(function (a, b, c) {
-                    console.log("[Ajax Failed]");
-                    console.log(a);
-                    console.log(b);
-                    console.log(c);
-
-                    alert.css("display", "");
-                    alert.html(`
-                        <i class="bi-exclamation-circle-fill"></i>
-                        このEメールアドレスは既に登録されています
-                    `);
-                });
-            }).fail(function (a, b, c) {
-                console.log("[Ajax Failed]");
-                console.log(a);
-                console.log(b);
-                console.log(c);
-
-                alert.css("display", "");
-                alert.html(`
-                <i class="bi-exclamation-circle-fill"></i>
-                このMCIDは存在しません
-            `);
-            });
-        }
-    });
 });
-
-async function sha256(data) {
-    const encoder = new TextEncoder();
-    const dataBuffer = encoder.encode(data);
-
-    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-}
 
 function buttonCheck(email, mcid, password, password2) {
     const regex = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$");

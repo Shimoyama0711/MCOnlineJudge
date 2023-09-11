@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>MCOnlineJudge - Log in</title>
+
+    <!-- Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/9a9d8a46b3.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+    <script>
+        $(function () {
+            $("#navbar").load("/navbar");
+        });
+    </script>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<div class="p-3 container" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-12">
+            <div class="p-3 modal-content rounded-1 shadow">
+                <h2 class="mb-3">
+                    <img src="{{ url_for('static', filename='favicon.ico') }}" alt="MCOnlineJudge Logo">
+                    MCOnlineJudge Log in
+                </h2>
+                <div class="mb-3 p-3 border rounded-1" style="text-align: left">
+                    <form action="{{ url_for('login') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="emailInput">
+                                <i class="bi-envelope-at"></i>
+                                <b>E-mail Address</b>
+                            </label>
+                            <input name="email" class="form-control" type="email" id="emailInput">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="passwordInput">
+                                <i class="bi-key"></i>
+                                <b>Password</b>
+                            </label>
+                            <input name="password" class="form-control" type="password" id="passwordInput">
+                        </div>
+
+                        <p>
+                            <a href="/recovery.html">Forgot Password?</a>
+                        </p>
+
+                        <div class="alert alert-danger" style="display: none" id="login-alert"></div>
+
+                        <button type="submit" class="btn btn-success disabled me-3" id="loginButton">
+                            <i class="bi-arrow-right-square"></i>
+                            Log in
+                        </button>
+
+                        <a class="btn btn-secondary" id="signupButton" href="{{ url_for('signup') }}">
+                            <i class="bi-person-fill-add"></i>
+                            Sign up
+                        </a>
+
+                        {% if display %}
+                            {% if success %}
+                                <div class="my-3 alert alert-success">{{ msg }}</div>
+                            {% else %}
+                                <div class="my-3 alert alert-danger">{{ msg }}</div>
+                            {% endif %}
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
