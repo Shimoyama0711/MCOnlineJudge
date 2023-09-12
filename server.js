@@ -215,7 +215,7 @@ serveTls(async (req) => {
 
     // 404 Not Found //
     if (dir.status === 404) {
-        const text = await Deno.readTextFile("./public/404.html")
+        const text = await Deno.readTextFile("./public/error.html")
         return new Response(text, {
             status: 404,
             headers: {

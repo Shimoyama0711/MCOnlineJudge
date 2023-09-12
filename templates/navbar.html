@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 
     <title>Navigation Bar</title>
-
-    <!-- Script -->
-    <script src="/static/js/navbar.js"></script>
 </head>
 
 <body>
@@ -62,10 +59,17 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}" id="login">
-                        <i class="bi-arrow-right-square-fill"></i>
-                        Login
-                    </a>
+                    {% if session.mcid|length > 0 %}
+                        <a class="nav-link" href="{{ url_for('user_page') }}">
+                            <img src="https://mineskin.eu/helm/{{ session.mcid }}/24" alt="Your Skin">
+                            {{ session.mcid }} さん
+                        </a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="bi-arrow-right-square-fill"></i>
+                            Login
+                        </a>
+                    {% endif %}
                 </li>
             </ul>
         </div>

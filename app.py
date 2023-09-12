@@ -15,7 +15,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 app = Flask(__name__)
 
 # SET APP SECRET KEY #
-app.secret_key = secrets.token_hex(16)
+# app.secret_key = secrets.token_hex(16)
+app.secret_key = "0123456789abcdef0123456789abcdef"
 
 print(f"APP SECRET KEY: \u001b[31m{app.secret_key}\u001b[0m")
 
@@ -182,7 +183,11 @@ def login():
 
         if user:
             session["loggedin"] = True
+            session["email"] = user["email"]
             session["mcid"] = user["mcid"]
+            session["password"] = user["password"]
+            session["uuid"] = user["uuid"]
+            session["created_at"] = user["created_at"]
             msg = "ログインに成功しました！"
             return render_template("index.html", msg=msg, display=True, success=True)
         else:
@@ -195,7 +200,11 @@ def login():
 @app.route("/logout")
 def logout():
     session.pop("loggedin", None)
+    session.pop("email", None)
     session.pop("mcid", None)
+    session.pop("password", None)
+    session.pop("uuid", None)
+    session.pop("created_at", None)
     return redirect(url_for("index"))
 
 
@@ -230,7 +239,16 @@ def signup():
 
             cursor.execute(f"INSERT INTO users VALUES ('{email}', '{mcid}', '{hashed}', '{uuid}', '{created_at}')")
             mysql.connection.commit()
+
+            session["loggedin"] = True
+            session["email"] = user["email"]
+            session["mcid"] = user["mcid"]
+            session["password"] = user["password"]
+            session["uuid"] = user["uuid"]
+            session["created_at"] = user["created_at"]
+
             msg = "アカウントの作成に成功しました！"
+
             return render_template("index.html", msg=msg, display=True, success=True)
 
         return render_template("signup.html", msg=msg, display=True, success=False)
@@ -245,39 +263,41 @@ def user_page():
 
     print(f"mcid = {mcid}")
 
-    if mcid is None:
-        return render_template("404.html")
+    if mcid is not None:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(f"SELECT * FROM users WHERE mcid = '{mcid}'")
 
-    if len(str(mcid)) == 0 or str(mcid) == "undefined":
-        return render_template("404.html")
+        user = cursor.fetchone()
 
-    conn = mysql.connector.connect(host="127.0.0.1", user="root", password="BTcfrLkK1FFU")
+        if user:
+            mcid = user["mcid"]
+            uuid = user["uuid"]
+            created_at = user["created_at"]
 
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM mconlinejudge.users WHERE mcid = '{mcid}'")
-
-    result = cursor.fetchone()
-
-    if result is None:
-        cursor.close()
-        conn.close()
-
-        return render_template("404.html")
+            return render_template("user.html", query=True, mcid=mcid, uuid=uuid, created_at=created_at)
+        else:
+            return render_template("error.html", status=404, msg="User Not Found")
     else:
-        email = result[0]
-        mcid = result[1]
-        encrypted = result[2]
-        uuid = result[3]
-        created_at = result[4]
+        try:
+            print("Session:", session["mcid"])
+            return render_template("user.html", query=False)
+        except KeyError:
+            return render_template("error.html", status=400, msg="Bad Request"), 400
 
-        cursor.close()
-        conn.close()
 
-        return render_template("user.html", email=email, mcid=mcid, encrypted=encrypted, uuid=uuid,
-                               created_at=created_at)
+@app.route("/settings")
+def settings():
+    return render_template("settings.html")
 
 
 # API #
+
+
+@app.route("/teapot")
+@app.route("/419")
+def teapot():
+    return render_template("error.html", status=419, msg="I'm a teapot."), 419
+
 
 @app.route("/get-uuid")
 def get_uuid():
