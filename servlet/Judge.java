@@ -61,7 +61,7 @@ public class Judge {
      */
     public static void insertSourceDatabase(String uuid, String problem, String judgeId, String date, String body, String status) {
         try {
-            String sqlURL = "jdbc:mysql://mysql-1.c2b8kou8mtea.ap-northeast-1.rds.amazonaws.com:3306/mconlinejudge";
+            String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
             String SQL = "INSERT INTO sources (uuid, problem, judge_id, date, body, status) VALUES (?, ?, ?, ?, ?, ?)";
@@ -219,7 +219,7 @@ public class Judge {
      */
     public static void updateStatus(String judgeId, String status) {
         try {
-            String sqlURL = "jdbc:mysql://mysql-1.c2b8kou8mtea.ap-northeast-1.rds.amazonaws.com:3306/mconlinejudge";
+            String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
             String SQL = "UPDATE sources SET status = ? WHERE judge_id = ?";

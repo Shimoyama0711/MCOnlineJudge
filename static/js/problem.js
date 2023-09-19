@@ -1,5 +1,5 @@
 $(function () {
-    const problem = location.pathname.replace("/problem/", "").replace(".html", "");
+    const problem = location.pathname.replace("/problem/", "");
 
     // CodeMirror 設定部分 //
     const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -9,15 +9,11 @@ $(function () {
         tabSize: 4
     });
 
-    // Cookie の "uuid" が空でなければ提出部分を表示 //
-    const submitDiv = $("#submit-div");
-
     // ボタンが押されたときの処理 //
     const submitButton = $("#submit-button");
 
     submitButton.on("click", function () {
         const array = {
-            uuid: getCookieFromKey("uuid"),
             problem: location.pathname.replace("/problem/", "").replace(".html", ""),
             date: getFormattedDate(new Date()),
             body: editor.getValue()
@@ -28,8 +24,11 @@ $(function () {
         $.ajax({
             url: "/send-judge",
             type: "POST",
-            dataType: "text",
-            data: JSON.stringify(array)
+            dataType: "json",
+            data: JSON.stringify(array),
+            headers: {
+                "Content-Type": "application/json"
+            }
         }).done(function() {
             // console.log("Ajax Successfully!");
             submitButton.addClass("disabled");
@@ -40,7 +39,7 @@ $(function () {
                 送信中
             `);
             setTimeout(function() {
-                location.href = "/submissions.html";
+                location.href = "/submissions";
             }, 1000);
         }).fail(function(a, b, c) {
             console.log(a);

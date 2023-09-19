@@ -312,7 +312,7 @@ def problem_page(problem_id):
     output_obj = detail["output"].replace("\\n", "\n")
     hints = detail["hints"].split(",")
     input_examples = detail["input_examples"].split(",")
-    output_examples = detail["input_examples"].split(",")
+    output_examples = detail["output_examples"].split(",")
 
     print(conditions)
 
@@ -335,6 +335,47 @@ def problem_page(problem_id):
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
+
+
+@app.route("/send-judge", methods=["POST"])
+def send_judge():
+    json_data = request.json
+
+    send_data = {
+        "uuid": session["uuid"],
+        "problem": json_data.get("problem"),
+        "date": json_data.get("date"),
+        "body": json_data.get("body")
+    }
+
+    response = requests.post("http://localhost:8080/send-judge", json=send_data)
+
+    return make_response(response.text), response.status_code
+
+
+@app.route("/submissions")
+def submissions_page():
+    submissions = []
+
+    if session["loggedin"]:
+        uuid = session["uuid"]
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(f"SELECT * FROM sources WHERE uuid = '{uuid}'")
+
+        submissions = cursor.fetchall()
+
+    return render_template("submissions.html", submissions=submissions)
+
+
+@app.route("/submission/<path:judge_id>")
+def submission_page(judge_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(f"SELECT * FROM sources WHERE judge_id = '{judge_id}'")
+
+    submission = cursor.fetchone()
+
+    return render_template("submission.html", submission=submission)
 
 
 # API #
@@ -403,4 +444,4 @@ def get_all_problems():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
