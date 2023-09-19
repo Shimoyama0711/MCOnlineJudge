@@ -289,12 +289,30 @@ def user_page():
 @app.route("/problem/<path:problem_id>")
 def problem_page(problem_id):
     if problem_id == "top":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(f"SELECT * FROM problems")
+        solved = []
+        unsolved = []
 
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        cursor.execute(f"SELECT * FROM problems")
         problems = cursor.fetchall()
 
-        return render_template(f"problem/top.html", problems=problems)
+        if session:
+            uuid = session["uuid"]
+
+            cursor.execute(f"SELECT * FROM sources WHERE uuid = '{uuid}'")
+            submissions = cursor.fetchall()
+
+            for elem in submissions:
+                if elem["status"] == "AC":
+                    solved.append(elem["problem"])
+                else:
+                    unsolved.append(elem["problem"])
+
+            solved = list(set(solved))
+            unsolved = list(set(unsolved))
+
+        return render_template(f"problem/top.html", problems=problems, solved=solved, unsolved=unsolved)
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(f"SELECT * FROM problems WHERE id = '{problem_id}'")
@@ -357,7 +375,7 @@ def send_judge():
 def submissions_page():
     submissions = []
 
-    if session["loggedin"]:
+    if session:
         uuid = session["uuid"]
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)

@@ -46,15 +46,29 @@
                 </thead>
                 <tbody>
                     {% for row in problems %}
-                    <tr>
-                        <td>
-                            <a href="/problem/{{ row['id'] }}">{{ row['title'] }}</a>
-                        </td>
-                        <td>{{ row['time'] }}</td>
-                        <td>{{ row['memory'] }}</td>
-                        <td>{{ row['difficulty'] }}</td>
-                        <td>{{ row['score'] }}</td>
-                    </tr>
+                        {% if row["id"] in solved %}
+                        <tr class="table-success">
+                        {% elif row["id"] in unsolved %}
+                        <tr class="table-warning">
+                        {% else %}
+                        <tr>
+                        {% endif %}
+                            <td>
+                                <a href="/problem/{{ row['id'] }}">{{ row['title'] }}</a>
+                            </td>
+                            <td style="text-align: center">
+                                <code>{{ row['time'] }}</code>
+                            </td>
+                            <td style="text-align: center">
+                                <code>{{ row['memory'] }}</code>
+                            </td>
+                            <td style="text-align: center">
+                                <code>{{ row['difficulty'] }}</code>
+                            </td>
+                            <td style="text-align: center">
+                                <code>{{ row['score'] }}</code>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>

@@ -46,32 +46,32 @@
                 </thead>
                 <tbody>
                 {% for row in submissions %}
-                <tr>
-                    <td>
-                        <a href="/problem/{{ row['problem'] }}">{{ row["problem"] }}</a>
-                    </td>
-                    <td>
-                        <code>{{ row["date"] }}</code>
-                    </td>
-                    <td>
-                        <code>{{ row["body"]|length }}</code>
-                    </td>
-                    <td style="text-align: center">
-                        {% if row["status"] == "AC" %}
-                        <span class="badge bg-success">{{ row["status"] }}</span>
-                        {% elif row["status"] == "Judge..." %}
-                        <span class="badge bg-secondary">{{ row["status"] }}</span>
-                        {% else %}
-                        <span class="badge bg-warning">{{ row["status"] }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ row["score"] }}</td>
-                    <td style="text-align: center">
-                        <a class="btn btn-sm btn-secondary" href="/submission/{{ row['judge_id'] }}">
-                            <i class="bi-chat-square-dots-fill"></i>
-                        </a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <a href="/problem/{{ row['problem'] }}">{{ row["problem"] }}</a>
+                        </td>
+                        <td>
+                            <code>{{ row["date"] }}</code>
+                        </td>
+                        <td>
+                            <code>{{ row["body"]|length }}</code>
+                        </td>
+                        <td style="text-align: center">
+                            {% if row["status"] == "AC" %}
+                            <span class="badge bg-success">{{ row["status"] }}</span>
+                            {% elif row["status"] == "Judge..." %}
+                            <span class="badge bg-secondary">{{ row["status"] }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ row["status"] }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row["score"] }}</td>
+                        <td style="text-align: center">
+                            <a class="btn btn-sm btn-secondary" href="/submission/{{ row['judge_id'] }}">
+                                <i class="bi-chat-square-dots-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
