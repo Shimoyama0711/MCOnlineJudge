@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 import requests
 from flask import Flask, redirect, request, make_response, render_template, url_for, session
+from markupsafe import Markup
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import hashlib
@@ -241,11 +242,11 @@ def signup():
             mysql.connection.commit()
 
             session["loggedin"] = True
-            session["email"] = user["email"]
-            session["mcid"] = user["mcid"]
-            session["password"] = user["password"]
-            session["uuid"] = user["uuid"]
-            session["created_at"] = user["created_at"]
+            session["email"] = email
+            session["mcid"] = mcid
+            session["password"] = hashed
+            session["uuid"] = uuid
+            session["created_at"] = created_at
 
             msg = "アカウントの作成に成功しました！"
 
@@ -285,6 +286,52 @@ def user_page():
             return render_template("error.html", status=400, msg="Bad Request"), 400
 
 
+@app.route("/problem/<path:problem_id>")
+def problem_page(problem_id):
+    if problem_id == "top":
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(f"SELECT * FROM problems")
+
+        problems = cursor.fetchall()
+
+        return render_template(f"problem/top.html", problems=problems)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(f"SELECT * FROM problems WHERE id = '{problem_id}'")
+
+    detail = cursor.fetchone()
+
+    title = detail["title"]
+    time = detail["time"]
+    memory = detail["memory"]
+    difficulty = detail["difficulty"]
+    score = detail["score"]
+    problem_statement = detail["problem_statement"]
+    conditions = detail["conditions"].replace("@", "\\").split("~")
+    input_obj = detail["input"].replace("\\n", "\n")
+    output_obj = detail["output"].replace("\\n", "\n")
+    hints = detail["hints"].split(",")
+    input_examples = detail["input_examples"].split(",")
+    output_examples = detail["input_examples"].split(",")
+
+    print(conditions)
+
+    return render_template(f"problem/problem_template.html",
+                           id=problem_id,
+                           title=title,
+                           time=time,
+                           memory=memory,
+                           difficulty=difficulty,
+                           score=score,
+                           problem_statement=problem_statement,
+                           conditions=conditions,
+                           input=input_obj,
+                           output=output_obj,
+                           hints=hints,
+                           input_examples=input_examples,
+                           output_examples=output_examples)
+
+
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
@@ -320,6 +367,18 @@ def get_uuid():
         return make_response("400 Bad Request - Invalid username."), 400, {
             "Content-Type": "text/plain"
         }
+
+
+@app.route("/get-all-problems")
+def get_all_problems():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(f"SELECT * FROM problems")
+
+    problems = cursor.fetchall()
+
+    return str(problems), 200, {
+        "Content-Type": "application/json"
+    }
 
 
 # @app.route("/get-user-from-email")

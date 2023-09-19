@@ -204,7 +204,7 @@ serveTls(async (req) => {
     }
 
     if (path.startsWith("/problem/") && !path.includes(".")) {
-        const text = await Deno.readTextFile("./public/PROBLEM_TEMPLATE.html");
+        const text = await Deno.readTextFile("./public/problem_template.html");
         return new Response(text, {
             status: 200,
             headers: {

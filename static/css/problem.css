@@ -1,6 +1,7 @@
 .bq {
     font-size: 0.8rem;
     line-height: 1.25rem;
+    white-space: pre;
 }
 
 .bq-tex {

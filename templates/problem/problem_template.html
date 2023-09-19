@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 
-    <title id="title">Problem</title>
+    <title id="title">{{ title }}</title>
 
     <!-- Script -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/9a9d8a46b3.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/js/codemirror.js"></script>
-    <script src="/static/js/clike.js"></script>
-    <script src="/static/js/problem.js"></script>
+    <script src="{{ url_for('static', filename='js/codemirror.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/clike.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/problem.js') }}"></script>
 
     <script>
         $(function () {
@@ -33,10 +33,16 @@
     </script>
 
     <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/codemirror.css">
-    <link rel="stylesheet" href="/css/problem.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/problem.css') }}">
+
+    <style>
+        .newline {
+            white-space: pre;
+        }
+    </style>
 </head>
 
 <body>
@@ -46,15 +52,15 @@
 <main class="m-3 p-3 mx-auto border-start border-end shadow" style="width: 80%">
     <div class="container-fluid">
         <div class="row">
-            <h1 id="problem-title">[SECTION]-[NUMBER] - [TITLE]</h1>
+            <h1 id="problem-title">{{ title }}</h1>
         </div>
         <hr>
         <div class="row">
             <p>
-                実行時間制限: <code id="problem-time">NaN</code> sec / メモリ制限: <code id="problem-memory">NaN</code> MB / 難易度: <code id="problem-difficulty">NaN</code>
+                実行時間制限: <code id="problem-time">{{ time }}</code> sec / メモリ制限: <code id="problem-memory">{{ memory }}</code> MB / 難易度: <code id="problem-difficulty">{{ difficulty }}</code>
             </p>
             <p id="problem-score">
-                配点: $\textrm{NaN}$ 点
+                配点: $\textrm{ {{ score }} }$ 点
             </p>
         </div>
         <hr>
@@ -63,7 +69,7 @@
                 <i class="bi-question-circle"></i>
                 問題文
             </h4>
-            <p>ここに問題文をドロップ</p>
+            <p class="newline">{{ problem_statement | safe }}</p>
         </div>
         <div class="row mb-3 ms-auto">
             <h4>
@@ -71,7 +77,9 @@
                 制約
             </h4>
             <ul>
-                <li>ここに制約をドロップ</li>
+                {% for row in conditions %}
+                <li>{{ row }}</li>
+                {% endfor %}
             </ul>
         </div>
         <hr>
@@ -80,20 +88,14 @@
                 <i class="bi-keyboard"></i>
                 入力
             </h4>
-            <p>ここに入力をドロップ</p>
-            <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq-tex">
-                $hogehoge$
-            </p>
+            <div class="newline"><p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq-tex">{{ input | safe }}</p></div>
         </div>
         <div class="row mb-3 ms-auto">
             <h4>
                 <i class="bi-terminal"></i>
                 出力
             </h4>
-            <p>ここに出力をドロップ</p>
-            <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                The Magic Words are Squeamish Ossifrage
-            </p>
+            <div class="newline"><p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">{{ output | safe }}</p></div>
         </div>
         <hr>
         <div class="row mb-3 ms-auto">
@@ -109,15 +111,11 @@
                 <div class="collapse" id="hintCollapse">
                     <div class="card card-body">
                         <ul>
+                            {% for row in hints %}
                             <li>
-                                <a href="#">Hint Hyperlink 1</a>
+                                <a href="{{ row }}">{{ row }}</a>
                             </li>
-                            <li>
-                                <a href="#">Hint Hyperlink 2</a>
-                            </li>
-                            <li>
-                                <a href="#">Hint Hyperlink 3</a>
-                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -125,23 +123,22 @@
             <div class=""></div>
         </div>
         <hr>
+        {% for i in range(input_examples|length) %}
         <div class="mb-3">
             <div class="row mb-3 ms-auto">
-                <h4>入力例1</h4>
-                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    one
-                </p>
+                <h4>入力例{{ i + 1 }}</h4>
+                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">{{ input_examples[i] }}</p>
             </div>
             <div class="row mb-3 ms-auto">
-                <h4>出力例1</h4>
-                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">
-                    1
-                </p>
-                <p>ここにコメントをドロップ</p>
+                <h4>出力例{{ i + 1 }}</h4>
+                <p class="p-2 border border-secondary border-opacity-50 bg-light rounded-1 font-monospace bq">{{ output_examples[i] }}</p>
             </div>
         </div>
+        <hr>
+        {% endfor %}
     </div>
 
+    {% if session.mcid %}
     <div class="row mb-3 ms-auto" id="submit-div">
         <h4>
             <i class="bi-upload"></i>
@@ -166,6 +163,7 @@
             </button>
         </div>
     </div>
+    {% endif %}
 </main>
 
 </body>
