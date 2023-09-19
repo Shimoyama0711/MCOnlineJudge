@@ -362,7 +362,6 @@ def submissions_page():
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(f"SELECT * FROM sources WHERE uuid = '{uuid}'")
-
         submissions = cursor.fetchall()
 
     return render_template("submissions.html", submissions=submissions)
@@ -374,8 +373,19 @@ def submission_page(judge_id):
     cursor.execute(f"SELECT * FROM sources WHERE judge_id = '{judge_id}'")
 
     submission = cursor.fetchone()
+    uuid = submission["uuid"]
 
-    return render_template("submission.html", submission=submission)
+    cases = []
+    cases_json = json.loads(submission["cases"])
+
+    for key, value in cases_json.items():
+        cases.append({"key": key, "value": value})
+
+    cursor.execute(f"SELECT * FROM users WHERE uuid = '{uuid}'")
+    user = cursor.fetchone()
+    mcid = user["mcid"]
+
+    return render_template("submission.html", submission=submission, mcid=mcid, cases=cases)
 
 
 # API #

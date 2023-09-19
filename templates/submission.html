@@ -51,7 +51,8 @@
                     <tr>
                         <th>提出者</th>
                         <td id="table-author" style="text-align: center">
-                            <a href="/user?mcid={{ submission['uuid'] }}">{{ submission["uuid"] }}</a>
+                            <img src="https://mineskin.eu/helm/{{ mcid }}/24" alt="{{ mcid }}'s Skin">
+                            <a href="/user?mcid={{ mcid }}">{{ mcid }}</a>
                         </td>
                     </tr>
                     <tr>
@@ -99,6 +100,20 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for row in cases %}
+                    <tr>
+                        <td class="font-monospace">{{ row["key"] }}</td>
+                        <td style="text-align: center">
+                            {% if row["value"] == "AC" %}
+                            <span class="badge bg-success">{{ row["value"] }}</span>
+                            {% elif submission["status"] == "Judge..." %}
+                            <span class="badge bg-secondary">{{ row["value"] }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ row["value"] }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
