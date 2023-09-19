@@ -366,7 +366,7 @@ def send_judge():
         "body": json_data.get("body")
     }
 
-    response = requests.post("http://localhost:8080/send-judge", json=send_data)
+    response = requests.post("http://localhost:8080/judge", json=send_data)
 
     return make_response(response.text), response.status_code
 

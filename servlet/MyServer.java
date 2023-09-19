@@ -153,7 +153,7 @@ class MyHandler implements HttpHandler {
     public static void insertSourceDatabase(String uuid, String problem, String judgeId, String date, String body, String status) {
         try {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
-            String USER = "admin";
+            String USER = "root";
             String PASS = "BTcfrLkK1FFU";
             String SQL = "INSERT INTO mconlinejudge.sources (uuid, problem, judge_id, date, body, status) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -356,7 +356,7 @@ class MyHandler implements HttpHandler {
     public static void updateStatus(String judgeId, String status) {
         try {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
-            String USER = "admin";
+            String USER = "root";
             String PASS = "BTcfrLkK1FFU";
             String SQL = "UPDATE mconlinejudge.sources SET status = ? WHERE judge_id = ?";
 
@@ -381,7 +381,7 @@ class MyHandler implements HttpHandler {
     public static void updateCases(String judgeId, String json) {
         try {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
-            String USER = "admin";
+            String USER = "root";
             String PASS = "BTcfrLkK1FFU";
             String SQL = "UPDATE mconlinejudge.sources SET cases = ? WHERE judge_id = ?";
 
