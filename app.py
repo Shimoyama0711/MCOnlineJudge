@@ -391,19 +391,23 @@ def submission_page(judge_id):
     cursor.execute(f"SELECT * FROM sources WHERE judge_id = '{judge_id}'")
 
     submission = cursor.fetchone()
-    uuid = submission["uuid"]
 
-    cases = []
-    cases_json = json.loads(submission["cases"])
+    if submission:
+        uuid = submission["uuid"]
 
-    for key, value in cases_json.items():
-        cases.append({"key": key, "value": value})
+        cases = []
+        cases_json = json.loads(submission["cases"])
 
-    cursor.execute(f"SELECT * FROM users WHERE uuid = '{uuid}'")
-    user = cursor.fetchone()
-    mcid = user["mcid"]
+        for key, value in cases_json.items():
+            cases.append({"key": key, "value": value})
 
-    return render_template("submission.html", submission=submission, mcid=mcid, cases=cases)
+        cursor.execute(f"SELECT * FROM users WHERE uuid = '{uuid}'")
+        user = cursor.fetchone()
+        mcid = user["mcid"]
+
+        return render_template("submission.html", submission=submission, mcid=mcid, cases=cases)
+    else:
+        return render_template("error.html", status=404, msg="Not Found"), 404
 
 
 # API #
