@@ -331,8 +331,7 @@ def problem_page(problem_id):
     hints = detail["hints"].split(",")
     input_examples = detail["input_examples"].split(",")
     output_examples = detail["output_examples"].split(",")
-
-    print(conditions)
+    comments = detail["comments"].split(",")
 
     return render_template(f"problem/problem_template.html",
                            id=problem_id,
@@ -347,7 +346,8 @@ def problem_page(problem_id):
                            output=output_obj,
                            hints=hints,
                            input_examples=input_examples,
-                           output_examples=output_examples)
+                           output_examples=output_examples,
+                           comments=comments)
 
 
 @app.route("/settings")
@@ -367,6 +367,22 @@ def send_judge():
     }
 
     response = requests.post("http://localhost:8080/judge", json=send_data)
+
+    return make_response(response.text), response.status_code
+
+
+@app.route("/send-mc-judge", methods=["POST"])
+def send_mc_judge():
+    json_data = request.json
+
+    send_data = {
+        "uuid": session["uuid"],
+        "problem": json_data.get("problem"),
+        "date": json_data.get("date"),
+        "body": json_data.get("body")
+    }
+
+    response = requests.post("http://localhost:8080/mc-judge", json=send_data)
 
     return make_response(response.text), response.status_code
 

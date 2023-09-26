@@ -13,8 +13,11 @@ $(function () {
     const submitButton = $("#submit-button");
 
     submitButton.on("click", function () {
+        const problemId = location.pathname.replace("/problem/", "").replace(".html", "");
+        const ajaxUrl = problemId.includes("tutorial") ? "/send-judge" : "/send-mc-judge";
+
         const array = {
-            problem: location.pathname.replace("/problem/", "").replace(".html", ""),
+            problem: problemId,
             date: getFormattedDate(new Date()),
             body: editor.getValue()
         };
@@ -22,7 +25,7 @@ $(function () {
         console.log(JSON.stringify(array));
 
         $.ajax({
-            url: "/send-judge",
+            url: ajaxUrl,
             type: "POST",
             dataType: "json",
             data: JSON.stringify(array),
