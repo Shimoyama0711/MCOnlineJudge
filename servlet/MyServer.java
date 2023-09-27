@@ -126,20 +126,10 @@ class MyHandler implements HttpHandler {
 
                                 if (copyFlag) {
                                     boolean deleteFlag = deleteJarFile(judgeId);
-                                } else {
-                                    System.out.println(".jar ファイルのコピーに失敗しました");
                                 }
-                            } else {
-                                System.out.println("ビルドに失敗しました");
                             }
-                        } else {
-                            System.out.println("plugin.yml の作成に失敗しました");
                         }
-                    } else {
-                        System.out.println("MANIFEST.MF の作成に失敗しました");
                     }
-                } else {
-                    System.out.println("コンパイルに失敗しました");
                 }
             }
         }
@@ -190,7 +180,7 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "INSERT INTO mconlinejudge.sources (uuid, problem, judge_id, date, body, status) VALUES (?, ?, ?, ?, ?, ?)";
+            String SQL = "INSERT INTO mconlinejudge.sources (uuid, problem, judge_id, date, body, status, cases) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);
@@ -201,6 +191,7 @@ class MyHandler implements HttpHandler {
             ps.setString(4, date);
             ps.setString(5, body);
             ps.setString(6, status);
+            ps.setString(7, "{}");
 
             ps.executeUpdate();
             conn.close();
@@ -349,7 +340,7 @@ class MyHandler implements HttpHandler {
      * @param judgeId コンパイルするJavaファイル名（ジャッジのUUID）
      */
     public static boolean compileMC(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "-d", "./", "-cp", "./lib/spigot-api-1.20.2-R0.1-SNAPSHOT.jar", "./src/" + judgeId + "/" + judgeId + ".java");
+        ProcessBuilder pb = new ProcessBuilder("javac", "-d", "./" + judgeId, "-cp", "./lib/spigot-api-1.20.2-R0.1-SNAPSHOT.jar", "./src/" + judgeId + "/" + judgeId + ".java");
         Process process = pb.start();
 
         boolean flag = true;
@@ -373,6 +364,9 @@ class MyHandler implements HttpHandler {
             }
         }
 
+        if (!flag)
+            System.out.println("コンパイルに失敗！");
+
         return flag;
     }
 
@@ -391,7 +385,7 @@ class MyHandler implements HttpHandler {
             }
         }
 
-        File manifestFile = new File("./src/" + judgeId + "/META-INF/MANIFEST.MF");
+        File manifestFile = new File(dir.getPath() + "/MANIFEST.MF");
 
         if (!manifestFile.exists()) {
             if (!manifestFile.createNewFile()) {
@@ -446,7 +440,10 @@ class MyHandler implements HttpHandler {
      * @return ビルドに成功したかどうか？
      */
     public static boolean buildJarFile(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/" + judgeId + "/META-INF/MANIFEST.MF", "./" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
+        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", "./" + judgeId + ".jar", "./src/" + judgeId + "/META-INF/MANIFEST.MF", "./" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
+
+        System.out.println("jar cvfm ./" + judgeId + ".jar ./src/" + judgeId + "/META-INF/MANIFEST.MF ./" + judgeId + "/" + judgeId + ".class ./plugin.yml");
+
         // ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
         Process process = pb.start();
 
@@ -471,6 +468,9 @@ class MyHandler implements HttpHandler {
             }
         }
 
+        if (!flag)
+            System.out.println("ビルドに失敗！");
+
         return flag;
     }
 
@@ -480,7 +480,7 @@ class MyHandler implements HttpHandler {
      * @return コピーに成功したかどうか？
      */
     public static boolean copyJarFile(String judgeId) {
-        Path from = Paths.get(judgeId + ".jar");
+        Path from = Paths.get("./"  + judgeId + ".jar");
         // Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/" + judgeId + ".jar");
         Path to = Paths.get("C:/Users/ayumu/Desktop/Development/MinecraftServer/[1.20.2]MCOnlineJudge/plugins/" + judgeId + ".jar");
 
@@ -488,6 +488,7 @@ class MyHandler implements HttpHandler {
             Files.copy(from, to);
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println(".jar ファイルのコピーに失敗！");
             return false;
         }
 
@@ -500,7 +501,7 @@ class MyHandler implements HttpHandler {
      * @return JAR ファイルの削除に成功したかどうか？
      */
     public static boolean deleteJarFile(String judgeId) {
-        File jarFile = new File(judgeId + ".jar");
+        File jarFile = new File("./" + judgeId + ".jar");
 
         if (!jarFile.delete()) {
             System.out.println(judgeId + ".jar の削除に失敗しました");
