@@ -177,7 +177,7 @@ public class MCCompile {
     public static boolean copyJarFile(String judgeId) {
         Path from = Paths.get(judgeId + ".jar");
         // Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/" + judgeId + ".jar");
-        Path to = Paths.get("C:/Users/Shimoyama Ayumu/Documents/Development/MinecraftServer/[1.20.1]MCOnlineJudge/plugins/" + judgeId + ".jar");
+        Path to = Paths.get("C:/Users/ayumu/Desktop/Development/MinecraftServer/[1.20.2]MCOnlineJudge/plugins/" + judgeId + ".jar");
 
         try {
             Files.copy(from, to);
