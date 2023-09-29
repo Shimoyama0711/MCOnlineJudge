@@ -5,6 +5,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import nl.vv32.rcon.Rcon;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -126,6 +127,10 @@ class MyHandler implements HttpHandler {
 
                                 if (copyFlag) {
                                     boolean deleteFlag = deleteJarFile(judgeId);
+
+                                    if (deleteFlag) {
+                                        boolean rconFlag = runRcon(judgeId, problem);
+                                    }
                                 }
                             }
                         }
@@ -217,7 +222,7 @@ class MyHandler implements HttpHandler {
     }
 
     public static void saveMCFile(String judgeId, String body) throws IOException {
-        File dir = new File("./src/" + judgeId);
+        File dir = new File("./judge_src/" + judgeId);
 
         if (!dir.mkdirs()) {
             System.out.println("Failed to create directory: " + judgeId);
@@ -225,7 +230,9 @@ class MyHandler implements HttpHandler {
         }
 
         File judgeFile = new File(dir.getPath() + "/" + judgeId + ".java");
-        body = body.replace("class Main", "class " + judgeId);
+        body = body.replace("class Main", "class " + judgeId)
+                .replace("[COMMAND]", judgeId);
+        body = "package " + judgeId + ";\n\n" + body;
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(judgeFile));
         bw.write(body);
@@ -340,7 +347,11 @@ class MyHandler implements HttpHandler {
      * @param judgeId コンパイルするJavaファイル名（ジャッジのUUID）
      */
     public static boolean compileMC(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("javac", "-d", "./" + judgeId, "-cp", "./lib/spigot-api-1.20.2-R0.1-SNAPSHOT.jar", "./src/" + judgeId + "/" + judgeId + ".java");
+        ProcessBuilder pb = new ProcessBuilder("javac", "-d", "./", "./" + judgeId + "/" + judgeId + ".java");
+        pb.directory(new File("./judge_src"));
+
+        System.out.println("javac -d ./ ./" + judgeId + "/" + judgeId + ".java");
+
         Process process = pb.start();
 
         boolean flag = true;
@@ -364,8 +375,10 @@ class MyHandler implements HttpHandler {
             }
         }
 
-        if (!flag)
-            System.out.println("コンパイルに失敗！");
+        if (!flag) {
+            System.out.println("コンパイルに失敗しました");
+            updateStatus(judgeId, "CE");
+        }
 
         return flag;
     }
@@ -376,11 +389,11 @@ class MyHandler implements HttpHandler {
      * @param judgeId ジャッジのUUIDが含まれたJavaファイル名
      */
     public static boolean createManifestFile(String judgeId) throws IOException {
-        File dir = new File("./src/" + judgeId + "/META-INF");
+        File dir = new File("./judge_src/" + judgeId + "/META-INF");
 
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                System.out.println("META-INF フォルダの作成に失敗！");
+                System.out.println("META-INF フォルダの作成に失敗しました");
                 return false;
             }
         }
@@ -389,13 +402,14 @@ class MyHandler implements HttpHandler {
 
         if (!manifestFile.exists()) {
             if (!manifestFile.createNewFile()) {
-                System.out.println("MANIFEST.MF の作成に失敗！");
+                System.out.println("MANIFEST.MF の作成に失敗しました");
+                updateStatus(judgeId, "SE");
                 return false;
             }
         }
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(manifestFile));
-        writer.write("Main-Class: " + judgeId + "." + judgeId + ".class\n");
+        writer.write("Main-Class: " + judgeId + "." + judgeId + "\n");
         writer.close();
 
         return true;
@@ -408,19 +422,20 @@ class MyHandler implements HttpHandler {
      */
     public static boolean createYAMLFile(String judgeId) throws IOException {
         String body =
-                "name: " + judgeId + "\n" +
-                        "main: " + judgeId + "." + judgeId + "\n" +
-                        "version: 1.0\n" +
-                        "api-version: 1.20\n" +
-                        "commands:\n" +
-                        "  " + judgeId + ":\n" +
-                        "    usage: This is a MCOnlineJudge Plugin Command.";
+            "name: " + judgeId + "\n" +
+            "main: " + judgeId + "." + judgeId + "\n" +
+            "version: 1.0\n" +
+            "api-version: 1.20\n" +
+            "commands:\n" +
+            "  " + judgeId + ":\n" +
+            "    usage: This is a MCOnlineJudge Plugin Command.";
 
-        File yamlFile = new File("./plugin.yml");
+        File yamlFile = new File("./judge_src/plugin.yml");
 
         if (!yamlFile.exists()) {
             if (!yamlFile.createNewFile()) {
                 System.out.println("YAMLファイルの作成に失敗しました");
+                updateStatus(judgeId, "SE");
                 return false;
             }
         }
@@ -440,20 +455,23 @@ class MyHandler implements HttpHandler {
      * @return ビルドに成功したかどうか？
      */
     public static boolean buildJarFile(String judgeId) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", "./" + judgeId + ".jar", "./src/" + judgeId + "/META-INF/MANIFEST.MF", "./" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
+        ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", "./../" + judgeId + ".jar", "./" + judgeId + "/META-INF/MANIFEST.MF", "./plugin.yml", "./org/*", "./" + judgeId + "/" + judgeId + ".class");
+        pb.directory(new File("./judge_src"));
 
-        System.out.println("jar cvfm ./" + judgeId + ".jar ./src/" + judgeId + "/META-INF/MANIFEST.MF ./" + judgeId + "/" + judgeId + ".class ./plugin.yml");
+        System.out.println("jar cvfm ./../" + judgeId + ".jar ./" + judgeId + "/META-INF/MANIFEST.MF ./" + judgeId + "/" + judgeId + ".class ./plugin.yml");
 
-        // ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./src/" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
+        // ProcessBuilder pb = new ProcessBuilder("jar", "cvfm", judgeId + ".jar", "./judge_src/" + judgeId + "/" + judgeId + ".class", "./plugin.yml");
         Process process = pb.start();
 
         boolean flag = true;
+
+        // Disabled Debug Message //
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.forName("MS932")))) {
             String line = reader.readLine();
 
             while (line != null) {
-                System.out.println(line);
+                // System.out.println(line);
                 line = reader.readLine();
             }
         }
@@ -468,8 +486,10 @@ class MyHandler implements HttpHandler {
             }
         }
 
-        if (!flag)
-            System.out.println("ビルドに失敗！");
+        if (!flag) {
+            System.out.println("ビルドに失敗しました");
+            updateStatus(judgeId, "BE");
+        }
 
         return flag;
     }
@@ -482,13 +502,14 @@ class MyHandler implements HttpHandler {
     public static boolean copyJarFile(String judgeId) {
         Path from = Paths.get("./"  + judgeId + ".jar");
         // Path to = Paths.get("C:/Users/ayumu/Desktop/Development/Server_1.20.1/plugins/" + judgeId + ".jar");
-        Path to = Paths.get("C:/Users/ayumu/Desktop/Development/MinecraftServer/[1.20.2]MCOnlineJudge/plugins/" + judgeId + ".jar");
+        Path to = Paths.get("C:/MCOJ-Server/plugins/" + judgeId + ".jar");
 
         try {
             Files.copy(from, to);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println(".jar ファイルのコピーに失敗！");
+            System.out.println(".jar ファイルのコピーに失敗しました");
+            updateStatus(judgeId, "SE");
             return false;
         }
 
@@ -505,6 +526,22 @@ class MyHandler implements HttpHandler {
 
         if (!jarFile.delete()) {
             System.out.println(judgeId + ".jar の削除に失敗しました");
+            updateStatus(judgeId, "SE");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean runRcon(String judgeId, String problemId) {
+        try (Rcon rcon = Rcon.open("localhost", 25575)) {
+            if (rcon.authenticate("hogehoge")) {
+                System.out.println(rcon.sendCommand("rl"));
+                System.out.println(rcon.sendCommand("judge " + judgeId + " " + problemId));
+            }
+        } catch (IOException e) {
+            System.out.println("RCON の接続に失敗しました");
+            updateStatus(judgeId, "SE");
             return false;
         }
 
@@ -567,7 +604,7 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "UPDATE mconlinejudge.sources SET status = ? WHERE judge_id = ?";
+            String SQL = "UPDATE sources SET status = ? WHERE judge_id = ?";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);
@@ -592,7 +629,7 @@ class MyHandler implements HttpHandler {
             String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
             String USER = "root";
             String PASS = "BTcfrLkK1FFU";
-            String SQL = "UPDATE mconlinejudge.sources SET cases = ? WHERE judge_id = ?";
+            String SQL = "UPDATE sources SET cases = ? WHERE judge_id = ?";
 
             Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
             conn.setAutoCommit(true);

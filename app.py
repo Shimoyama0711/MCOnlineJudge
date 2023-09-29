@@ -2,12 +2,10 @@ import json
 from datetime import datetime
 import requests
 from flask import Flask, redirect, request, make_response, render_template, url_for, session
-from markupsafe import Markup
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import hashlib
 import secrets
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # import mysql.connector
 
