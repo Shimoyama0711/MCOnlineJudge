@@ -1,7 +1,7 @@
-name: e6daee07db4e46bc866c21a14d2b52b3
-main: e6daee07db4e46bc866c21a14d2b52b3.e6daee07db4e46bc866c21a14d2b52b3
+name: a483d33c58fc47e0a289c2f92cba67c0
+main: a483d33c58fc47e0a289c2f92cba67c0.a483d33c58fc47e0a289c2f92cba67c0
 version: 1.0
 api-version: 1.20
 commands:
-  e6daee07db4e46bc866c21a14d2b52b3:
+  a483d33c58fc47e0a289c2f92cba67c0:
     usage: This is a MCOnlineJudge Plugin Command.

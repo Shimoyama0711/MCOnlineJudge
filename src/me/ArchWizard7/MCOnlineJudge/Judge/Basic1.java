@@ -35,6 +35,7 @@ public class Basic1 {
         ObjectNode node = mapper.createObjectNode();
 
         String status = "AC";
+        int score = 0;
 
         String[] caseNames = {
                 "example_1",
@@ -51,6 +52,9 @@ public class Basic1 {
             int x = xArray[i];
             int y = yArray[i];
             int z = zArray[i];
+
+            world.getBlockAt(x, y, z).setType(Material.AIR); // 初期化
+
             server.dispatchCommand(sender, judgeId + " " + x + " " + y + " " + z);
             server.broadcastMessage(judgeId + " " + x + " " + y + " " + z);
 
@@ -59,6 +63,8 @@ public class Basic1 {
 
             if (!flag)
                 status = "WA";
+            else
+                score += 20;
 
             world.getBlockAt(x, y, z).setType(Material.AIR); // もとに戻す
         }
@@ -68,14 +74,15 @@ public class Basic1 {
         String sqlURL = "jdbc:mysql://localhost:3306/mconlinejudge";
         String USER = "root";
         String PASS = "BTcfrLkK1FFU";
-        String SQL = "UPDATE sources SET status = ?, cases = ? WHERE judge_id = ?";
+        String SQL = "UPDATE sources SET status = ?, score = ?, cases = ? WHERE judge_id = ?";
 
         Connection conn = DriverManager.getConnection(sqlURL, USER, PASS);
         conn.setAutoCommit(true);
         PreparedStatement ps = conn.prepareStatement(SQL);
         ps.setString(1, status);
-        ps.setString(2, json);
-        ps.setString(3, judgeId);
+        ps.setInt(2, score);
+        ps.setString(3, json);
+        ps.setString(4, judgeId);
 
         ps.executeUpdate();
         conn.close();

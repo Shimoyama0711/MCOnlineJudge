@@ -130,6 +130,25 @@ class MyHandler implements HttpHandler {
 
                                     if (deleteFlag) {
                                         boolean rconFlag = runRcon(judgeId, problem);
+
+                                        if (rconFlag) {
+                                            File dir = new File("./judge_src/" + judgeId);
+
+                                            File[] files = dir.listFiles();
+
+                                            if (files != null) {
+                                                for (File file : files) {
+                                                    if (file.isFile()) {
+                                                        if (!file.delete()) {
+                                                            System.out.println("ファイル " + file.getName() + " の削除に失敗しました");
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if (!dir.delete())
+                                                System.out.println("ディレクトリ " + dir.getName() + " の削除に失敗しました");
+                                        }
                                     }
                                 }
                             }
