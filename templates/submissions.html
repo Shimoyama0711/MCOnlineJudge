@@ -52,11 +52,11 @@
                         <td>
                             <a href="/problem/{{ row['problem'] }}">{{ row["problem"] }}</a>
                         </td>
-                        <td>
-                            <code style="text-align: center">{{ row["date"] }}</code>
+                        <td style="text-align: center">
+                            <code>{{ row["date"] }}</code>
                         </td>
-                        <td>
-                            <code style="text-align: center">{{ row["body"]|length }}</code>
+                        <td style="text-align: center">
+                            <code>{{ row["body"]|length }}</code>
                         </td>
                         <td style="text-align: center">
                             {% if row["status"] == "AC" %}
