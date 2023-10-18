@@ -19,7 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Basic1 {
+public class Basic2 {
     /**
      * テストケースをすべて判定し、MySQLデータベースに結果を上書きします
      * @param sender コマンド実行者。ここでは一般にサーバーを表します
@@ -43,10 +43,11 @@ public class Basic1 {
                 "case_1",
                 "case_2",
                 "case_3",
+                "case_4",
         };
-        int[] xArray = { 3, -17, 0, -72, -100, 100 };
-        int[] yArray = { 5,  -9, 0,  19,  -64, 319 };
-        int[] zArray = { 7, -31, 0,  31, -100, 100 };
+        int[] xArray = { 0, 0, 0, 0, 0, 0 };
+        int[] yArray = { 0, 0, 0, 0, 0, 0 };
+        int[] zArray = { 0, 0, 0, 0, 0, 0 };
 
         for (int i = 0; i < caseNames.length; i++) {
             int x = xArray[i];
