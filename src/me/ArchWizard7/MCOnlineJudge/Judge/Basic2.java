@@ -40,14 +40,12 @@ public class Basic2 {
         String[] caseNames = {
                 "example_1",
                 "example_2",
-                "case_1",
-                "case_2",
-                "case_3",
-                "case_4",
+                "example_3",
         };
-        int[] xArray = { 0, 0, 0, 0, 0, 0 };
-        int[] yArray = { 0, 0, 0, 0, 0, 0 };
-        int[] zArray = { 0, 0, 0, 0, 0, 0 };
+        int[] xArray = { 12, -1, 0 };
+        int[] yArray = { 34, -1, 0 };
+        int[] zArray = { 56, -1, 0 };
+        Material[] materials = { Material.EMERALD_BLOCK };
 
         for (int i = 0; i < caseNames.length; i++) {
             int x = xArray[i];
