@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 
-    <title>PRACTICE PAGE TEMPLATE</title>
+    <title></title>
 
     <!-- Script -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -13,6 +13,7 @@
     <script>
         $(function () {
             $("#navbar").load("/navbar");
+            $("title").text($("h1").text());
         });
     </script>
 
@@ -29,7 +30,7 @@
 <main class="p-3 container">
     <div class="row mb-3">
         <div class="col-md-10 col-sm-12">
-            <h1>Practice/Basic-1 - プラグインを作る準備をしよう</h1>
+            <h1>Practice/Basic-1 - はじめに</h1>
         </div>
     </div>
 
@@ -40,9 +41,32 @@
     </div>
 
     <div class="row mb-3">
-        <h2>はじめに</h2>
-        <p>MCOnlineJudgeへようこそ。</p>
-        <p>Minecraftを使ってJavaを学習する際に、最初は環境構築を行う必要があります。</p>
+        <h3>統合開発環境(IDE)のインストール</h3>
+        <p>プログラミングを行う上で、IDEを使う事は欠かせません。</p>
+        <p>ここでは、Javaプログラミングを行う際に有利となるJetBrains社の
+        <a href="https://www.jetbrains.com/ja-jp/idea/">IntelliJ IDEA</a>
+        をインストールしてみましょう。</p>
+    </div>
+
+    <div class="row mb-3">
+        <p>
+            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#InstallationCollapse" aria-expanded="false" aria-controls="collapseExample">
+                <i class="bi-info-circle-fill"></i>
+                インストール方法を見る
+            </button>
+        </p>
+        <div class="collapse" id="InstallationCollapse">
+            <div class="card card-body">
+                <div class="row">
+                    <h4>1. 公式ページからインストーラーをダウンロードする</h4>
+                    <p>まずは、以下のリンクからインストーラーをダウンロードしましょう。</p>
+                    <p><b>IntelliJ IDEA - Java と Kotlin の最先端 IDE</b></p>
+                    <p>
+                        <a href="https://www.jetbrains.com/ja-jp/idea/">https://www.jetbrains.com/ja-jp/idea/</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
