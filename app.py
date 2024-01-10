@@ -424,6 +424,12 @@ def submission_page(judge_id):
         return render_template("error.html", status=404, msg="Not Found"), 404
 
 
+@app.route("/practice/<path:practice_id>")
+def practice_page(practice_id):
+    return render_template(f"practice/{practice_id}.html")
+
+
+
 # API #
 
 
