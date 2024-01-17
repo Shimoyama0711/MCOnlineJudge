@@ -167,6 +167,11 @@ def navbar():
     return render_template("navbar.html")
 
 
+@app.route("/left-sidebar")
+def left_sidebar():
+    return render_template("left-sidebar.html")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     msg = ""
