@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 
 import java.sql.Connection;
@@ -20,7 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Basic2 {
+public class Basic3 {
     /**
      * テストケースをすべて判定し、MySQLデータベースに結果を上書きします
      * @param sender コマンド実行者。ここでは一般にサーバーを表します
@@ -42,40 +41,29 @@ public class Basic2 {
                 "example_1",
                 "example_2",
                 "example_3",
-                "test_1"
         };
-        int[] xArray = { 0, -17,  9, 13 };
-        int[] yArray = { 4,  -9, 13, 74 };
-        int[] zArray = { 0, -31, -4, 96 };
-        int[] NArray = { 5,   9,  1,  7 };
+        int[] xArray = { 12, -1, 0 };
+        int[] yArray = { 34, -1, 0 };
+        int[] zArray = { 56, -1, 0 };
+        Material[] materials = { Material.EMERALD_BLOCK };
 
         for (int i = 0; i < caseNames.length; i++) {
             int x = xArray[i];
             int y = yArray[i];
             int z = zArray[i];
-            int N = NArray[i];
 
-            // 初期化 //
-            for (int ly = y; ly >= y - (N-1); ly--) {
-                for (int lx = x - (N-1); lx <= x + (N-1); lx++) {
-                    for (int lz = z - (N-1); lz <= z + (N-1); lz++) {
-                        world.getBlockAt(lx, ly, lz).setType(Material.AIR);
-                    }
-                }
-            }
+            world.getBlockAt(x, y, z).setType(Material.AIR); // 初期化
 
-            String command = judgeId + " " + x + " " + y + " " + z + " " + N;
+            server.dispatchCommand(sender, judgeId + " " + x + " " + y + " " + z);
+            server.broadcastMessage(judgeId + " " + x + " " + y + " " + z);
 
-            server.dispatchCommand(sender, command);
-            server.broadcastMessage(command);
-
-            boolean flag = checkPyramid(x, y, z, N);
+            boolean flag = isGoldenBlock(x, y, z);
             node.put(caseNames[i], flag ? "AC" : "WA"); // JSON ノードに追加
 
             if (!flag)
                 status = "WA";
             else
-                score += 25;
+                score += 20;
 
             // world.getBlockAt(x, y, z).setType(Material.AIR); // もとに戻す
         }
@@ -102,41 +90,15 @@ public class Basic2 {
     }
 
     /**
-     * ワールド "MCOJ" にピラミッドが生成されたかチェックします
+     * ワールド "MCOJ" の座標 ({@code x}, {@code y}, {@code z}) が金ブロックかどうかを判定します
      * @param x x 座標
      * @param y y 座標
      * @param z z 座標
-     * @param N 段数
-     * @return 正しいピラミッドかどうかを返します
+     * @return 金ブロックかどうかを返します
      */
-    public static boolean checkPyramid(int x, int y, int z, int N) {
+    public static boolean isGoldenBlock(int x, int y, int z) {
         World world = Bukkit.getWorld("MCOJ");
         assert world != null;
-
-        // 初期化 //
-        int count = 0;
-
-        for (int ly = 0; ly <= (N-1); ly++) {
-            for (int lx = x - (N-1); lx <= x + (N-1); lx++) {
-                for (int lz = z - (N-1); lz <= z + (N-1); lz++) {
-                    Block block = world.getBlockAt(lx, y - ly, lz);
-
-                    boolean inX = lx >= (x - ly) && lx <= (x + ly);
-                    boolean inZ = lz >= (z - ly) && lz <= (z + ly);
-
-                    if (inX && inZ) {
-                        if (block.getType() != Material.BRICKS)
-                            return false;
-                    } else {
-                        if (block.getType() != Material.AIR)
-                            return false;
-                    }
-                }
-            }
-
-            count++;
-        }
-
-        return true;
+        return world.getBlockAt(x, y, z).getType() == Material.GOLD_BLOCK;
     }
 }
